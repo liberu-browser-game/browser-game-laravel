@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Admin\Resources\MenuResource\Pages;
+namespace App\Filament\Admin\Resources\ItemResource\Pages;
 
-use App\Filament\Admin\Resources\MenuResource;
+use App\Filament\Admin\Resources\ItemResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListMenus extends ListRecords
+class ListItems extends ListRecords
 {
-    protected static string $resource = MenuResource::class;
+    protected static string $resource = ItemResource::class;
 
     protected function getHeaderActions(): array
     {

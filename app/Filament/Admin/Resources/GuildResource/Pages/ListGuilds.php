@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Admin\Resources\MenuResource\Pages;
+namespace App\Filament\Admin\Resources\GuildResource\Pages;
 
-use App\Filament\Admin\Resources\MenuResource;
+use App\Filament\Admin\Resources\GuildResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
-class ListMenus extends ListRecords
+class ListGuilds extends ListRecords
 {
-    protected static string $resource = MenuResource::class;
+    protected static string $resource = GuildResource::class;
 
     protected function getHeaderActions(): array
     {

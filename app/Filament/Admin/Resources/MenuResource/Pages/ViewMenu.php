@@ -4,16 +4,16 @@ namespace App\Filament\Admin\Resources\MenuResource\Pages;
 
 use App\Filament\Admin\Resources\MenuResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListMenus extends ListRecords
+class ViewMenu extends ViewRecord
 {
     protected static string $resource = MenuResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\EditAction::make(),
         ];
     }
 }
