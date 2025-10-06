@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\ItemResource\Pages;
 
+use Filament\Actions\EditAction;
 use App\Filament\Admin\Resources\ItemResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
@@ -13,7 +14,7 @@ class ViewItem extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

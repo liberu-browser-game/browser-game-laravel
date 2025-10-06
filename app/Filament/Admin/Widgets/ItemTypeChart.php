@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class ItemTypeChart extends ChartWidget
 {
-    protected static ?string $heading = 'Items by Type';
+    protected ?string $heading = 'Items by Type';
 
     protected function getData(): array
     {

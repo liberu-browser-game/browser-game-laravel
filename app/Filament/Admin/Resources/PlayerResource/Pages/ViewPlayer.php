@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\PlayerResource\Pages;
 
+use Filament\Actions\EditAction;
 use App\Filament\Admin\Resources\PlayerResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
@@ -13,7 +14,7 @@ class ViewPlayer extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

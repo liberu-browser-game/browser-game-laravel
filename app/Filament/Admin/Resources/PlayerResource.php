@@ -2,9 +2,21 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\PlayerResource\Pages\ListPlayers;
+use App\Filament\Admin\Resources\PlayerResource\Pages\CreatePlayer;
+use App\Filament\Admin\Resources\PlayerResource\Pages\ViewPlayer;
+use App\Filament\Admin\Resources\PlayerResource\Pages\EditPlayer;
 use App\Models\Player;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,36 +29,36 @@ class PlayerResource extends Resource
 {
     protected static ?string $model = Player::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Game Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Game Management';
 
     protected static ?string $navigationLabel = 'Players';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('username')
+        return $schema
+            ->components([
+                TextInput::make('username')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->required(fn (string $context): bool => $context === 'create')
                     ->dehydrated(fn ($state) => filled($state))
                     ->dehydrateStateUsing(fn ($state) => bcrypt($state)),
-                Forms\Components\TextInput::make('level')
+                TextInput::make('level')
                     ->numeric()
                     ->default(1)
                     ->minValue(1)
                     ->maxValue(100),
-                Forms\Components\TextInput::make('experience')
+                TextInput::make('experience')
                     ->numeric()
                     ->default(0)
                     ->minValue(0),
@@ -57,40 +69,40 @@ class PlayerResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('username')
+                TextColumn::make('username')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('level')
+                TextColumn::make('level')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('experience')
+                TextColumn::make('experience')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('high_level')
+                Filter::make('high_level')
                     ->query(fn (Builder $query): Builder => $query->where('level', '>=', 10))
                     ->label('High Level Players (10+)'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -105,10 +117,10 @@ class PlayerResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlayers::route('/'),
-            'create' => Pages\CreatePlayer::route('/create'),
-            'view' => Pages\ViewPlayer::route('/{record}'),
-            'edit' => Pages\EditPlayer::route('/{record}/edit'),
+            'index' => ListPlayers::route('/'),
+            'create' => CreatePlayer::route('/create'),
+            'view' => ViewPlayer::route('/{record}'),
+            'edit' => EditPlayer::route('/{record}/edit'),
         ];
     }
 }

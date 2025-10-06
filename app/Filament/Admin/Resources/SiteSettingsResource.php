@@ -2,9 +2,22 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\SiteSettingsResource\Pages\ListSiteSettings;
+use App\Filament\Admin\Resources\SiteSettingsResource\Pages\CreateSiteSettings;
+use App\Filament\Admin\Resources\SiteSettingsResource\Pages\ViewSiteSettings;
+use App\Filament\Admin\Resources\SiteSettingsResource\Pages\EditSiteSettings;
 use App\Models\SiteSettings;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,68 +30,68 @@ class SiteSettingsResource extends Resource
 {
     protected static ?string $model = SiteSettings::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationGroup = 'System';
+    protected static string | \UnitEnum | null $navigationGroup = 'System';
 
     protected static ?string $navigationLabel = 'Site Settings';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('General Settings')
+        return $schema
+            ->components([
+                Section::make('General Settings')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->maxLength(255)
                             ->label('Site Name'),
-                        Forms\Components\TextInput::make('currency')
+                        TextInput::make('currency')
                             ->maxLength(10)
                             ->label('Currency Symbol'),
-                        Forms\Components\TextInput::make('default_language')
+                        TextInput::make('default_language')
                             ->maxLength(10)
                             ->default('en')
                             ->label('Default Language'),
                     ]),
-                Forms\Components\Section::make('Contact Information')
+                Section::make('Contact Information')
                     ->schema([
-                        Forms\Components\Textarea::make('address')
+                        Textarea::make('address')
                             ->maxLength(500)
                             ->rows(3),
-                        Forms\Components\TextInput::make('country')
+                        TextInput::make('country')
                             ->maxLength(100),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('phone_01')
+                        TextInput::make('phone_01')
                             ->tel()
                             ->maxLength(20)
                             ->label('Primary Phone'),
-                        Forms\Components\TextInput::make('phone_02')
+                        TextInput::make('phone_02')
                             ->tel()
                             ->maxLength(20)
                             ->label('Secondary Phone'),
-                        Forms\Components\TextInput::make('phone_03')
+                        TextInput::make('phone_03')
                             ->tel()
                             ->maxLength(20)
                             ->label('Tertiary Phone'),
                     ]),
-                Forms\Components\Section::make('Social Media')
+                Section::make('Social Media')
                     ->schema([
-                        Forms\Components\TextInput::make('facebook')
+                        TextInput::make('facebook')
                             ->url()
                             ->maxLength(255)
                             ->label('Facebook URL'),
-                        Forms\Components\TextInput::make('twitter')
+                        TextInput::make('twitter')
                             ->url()
                             ->maxLength(255)
                             ->label('Twitter URL'),
-                        Forms\Components\TextInput::make('github')
+                        TextInput::make('github')
                             ->url()
                             ->maxLength(255)
                             ->label('GitHub URL'),
-                        Forms\Components\TextInput::make('youtube')
+                        TextInput::make('youtube')
                             ->url()
                             ->maxLength(255)
                             ->label('YouTube URL'),
@@ -90,28 +103,28 @@ class SiteSettingsResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->label('Site Name'),
-                Tables\Columns\TextColumn::make('currency')
+                TextColumn::make('currency')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('default_language')
+                TextColumn::make('default_language')
                     ->searchable()
                     ->sortable()
                     ->label('Language'),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('country')
+                TextColumn::make('country')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -119,14 +132,14 @@ class SiteSettingsResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -141,10 +154,10 @@ class SiteSettingsResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSiteSettings::route('/'),
-            'create' => Pages\CreateSiteSettings::route('/create'),
-            'view' => Pages\ViewSiteSettings::route('/{record}'),
-            'edit' => Pages\EditSiteSettings::route('/{record}/edit'),
+            'index' => ListSiteSettings::route('/'),
+            'create' => CreateSiteSettings::route('/create'),
+            'view' => ViewSiteSettings::route('/{record}'),
+            'edit' => EditSiteSettings::route('/{record}/edit'),
         ];
     }
 }

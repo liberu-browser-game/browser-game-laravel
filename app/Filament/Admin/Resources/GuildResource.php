@@ -2,9 +2,21 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\GuildResource\Pages\ListGuilds;
+use App\Filament\Admin\Resources\GuildResource\Pages\CreateGuild;
+use App\Filament\Admin\Resources\GuildResource\Pages\ViewGuild;
+use App\Filament\Admin\Resources\GuildResource\Pages\EditGuild;
 use App\Models\Guild;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,21 +29,21 @@ class GuildResource extends Resource
 {
     protected static ?string $model = Guild::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static ?string $navigationGroup = 'Game Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Game Management';
 
     protected static ?string $navigationLabel = 'Guilds';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->maxLength(1000)
                     ->rows(4),
             ]);
@@ -41,23 +53,23 @@ class GuildResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 50) {
                             return null;
                         }
                         return $state;
                     }),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -65,14 +77,14 @@ class GuildResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -87,10 +99,10 @@ class GuildResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGuilds::route('/'),
-            'create' => Pages\CreateGuild::route('/create'),
-            'view' => Pages\ViewGuild::route('/{record}'),
-            'edit' => Pages\EditGuild::route('/{record}/edit'),
+            'index' => ListGuilds::route('/'),
+            'create' => CreateGuild::route('/create'),
+            'view' => ViewGuild::route('/{record}'),
+            'edit' => EditGuild::route('/{record}/edit'),
         ];
     }
 }

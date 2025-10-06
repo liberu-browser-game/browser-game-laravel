@@ -7,7 +7,7 @@ use Filament\Widgets\ChartWidget;
 
 class PlayerLevelChart extends ChartWidget
 {
-    protected static ?string $heading = 'Player Level Distribution';
+    protected ?string $heading = 'Player Level Distribution';
 
     protected function getData(): array
     {

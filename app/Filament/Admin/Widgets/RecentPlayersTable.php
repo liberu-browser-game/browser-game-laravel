@@ -2,6 +2,8 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\Action;
 use App\Models\Player;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -20,25 +22,25 @@ class RecentPlayersTable extends BaseWidget
                 Player::query()->latest()->limit(10)
             )
             ->columns([
-                Tables\Columns\TextColumn::make('username')
+                TextColumn::make('username')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('level')
+                TextColumn::make('level')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('experience')
+                TextColumn::make('experience')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Joined'),
             ])
-            ->actions([
-                Tables\Actions\Action::make('view')
+            ->recordActions([
+                Action::make('view')
                     ->url(fn (Player $record): string => route('filament.admin.resources.players.view', $record))
                     ->icon('heroicon-m-eye'),
             ]);

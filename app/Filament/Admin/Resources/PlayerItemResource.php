@@ -2,11 +2,24 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\PlayerItemResource\Pages\ListPlayerItems;
+use App\Filament\Admin\Resources\PlayerItemResource\Pages\CreatePlayerItem;
+use App\Filament\Admin\Resources\PlayerItemResource\Pages\ViewPlayerItem;
+use App\Filament\Admin\Resources\PlayerItemResource\Pages\EditPlayerItem;
 use App\Models\Player_Item;
 use App\Models\Player;
 use App\Models\Item;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,29 +32,29 @@ class PlayerItemResource extends Resource
 {
     protected static ?string $model = Player_Item::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-archive-box';
 
-    protected static ?string $navigationGroup = 'Game Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Game Management';
 
     protected static ?string $navigationLabel = 'Player Items';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('player_id')
+        return $schema
+            ->components([
+                Select::make('player_id')
                     ->relationship('player', 'username')
                     ->searchable()
                     ->preload()
                     ->required()
                     ->label('Player'),
-                Forms\Components\Select::make('item_id')
+                Select::make('item_id')
                     ->relationship('item', 'name')
                     ->searchable()
                     ->preload()
                     ->required()
                     ->label('Item'),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->numeric()
                     ->default(1)
                     ->minValue(1)
@@ -53,15 +66,15 @@ class PlayerItemResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('player.username')
+                TextColumn::make('player.username')
                     ->searchable()
                     ->sortable()
                     ->label('Player'),
-                Tables\Columns\TextColumn::make('item.name')
+                TextColumn::make('item.name')
                     ->searchable()
                     ->sortable()
                     ->label('Item'),
-                Tables\Columns\TextColumn::make('item.type')
+                TextColumn::make('item.type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'weapon' => 'danger',
@@ -72,28 +85,28 @@ class PlayerItemResource extends Resource
                         default => 'gray',
                     })
                     ->label('Item Type'),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('player')
+                SelectFilter::make('player')
                     ->relationship('player', 'username')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('item')
+                SelectFilter::make('item')
                     ->relationship('item', 'name')
                     ->searchable()
                     ->preload(),
-                Tables\Filters\SelectFilter::make('item_type')
+                SelectFilter::make('item_type')
                     ->options([
                         'weapon' => 'Weapon',
                         'armor' => 'Armor',
@@ -109,14 +122,14 @@ class PlayerItemResource extends Resource
                         );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -131,10 +144,10 @@ class PlayerItemResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlayerItems::route('/'),
-            'create' => Pages\CreatePlayerItem::route('/create'),
-            'view' => Pages\ViewPlayerItem::route('/{record}'),
-            'edit' => Pages\EditPlayerItem::route('/{record}/edit'),
+            'index' => ListPlayerItems::route('/'),
+            'create' => CreatePlayerItem::route('/create'),
+            'view' => ViewPlayerItem::route('/{record}'),
+            'edit' => EditPlayerItem::route('/{record}/edit'),
         ];
     }
 }

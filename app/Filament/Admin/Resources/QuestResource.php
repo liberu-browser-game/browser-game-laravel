@@ -2,10 +2,24 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\QuestResource\Pages\ListQuests;
+use App\Filament\Admin\Resources\QuestResource\Pages\CreateQuest;
+use App\Filament\Admin\Resources\QuestResource\Pages\ViewQuest;
+use App\Filament\Admin\Resources\QuestResource\Pages\EditQuest;
 use App\Models\Quest;
 use App\Models\Item;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,29 +32,29 @@ class QuestResource extends Resource
 {
     protected static ?string $model = Quest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-map';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-map';
 
-    protected static ?string $navigationGroup = 'Game Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Game Management';
 
     protected static ?string $navigationLabel = 'Quests';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->required()
                     ->maxLength(1000)
                     ->rows(4),
-                Forms\Components\TextInput::make('experience_reward')
+                TextInput::make('experience_reward')
                     ->numeric()
                     ->default(0)
                     ->minValue(0)
                     ->label('Experience Reward'),
-                Forms\Components\Select::make('item_reward_id')
+                Select::make('item_reward_id')
                     ->relationship('itemReward', 'name')
                     ->searchable()
                     ->preload()
@@ -53,51 +67,51 @@ class QuestResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 50) {
                             return null;
                         }
                         return $state;
                     }),
-                Tables\Columns\TextColumn::make('experience_reward')
+                TextColumn::make('experience_reward')
                     ->numeric()
                     ->sortable()
                     ->label('XP Reward'),
-                Tables\Columns\TextColumn::make('itemReward.name')
+                TextColumn::make('itemReward.name')
                     ->label('Item Reward')
                     ->placeholder('None')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('has_item_reward')
+                Filter::make('has_item_reward')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('item_reward_id'))
                     ->label('Has Item Reward'),
-                Tables\Filters\Filter::make('high_xp')
+                Filter::make('high_xp')
                     ->query(fn (Builder $query): Builder => $query->where('experience_reward', '>=', 100))
                     ->label('High XP Reward (100+)'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -112,10 +126,10 @@ class QuestResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListQuests::route('/'),
-            'create' => Pages\CreateQuest::route('/create'),
-            'view' => Pages\ViewQuest::route('/{record}'),
-            'edit' => Pages\EditQuest::route('/{record}/edit'),
+            'index' => ListQuests::route('/'),
+            'create' => CreateQuest::route('/create'),
+            'view' => ViewQuest::route('/{record}'),
+            'edit' => EditQuest::route('/{record}/edit'),
         ];
     }
 }

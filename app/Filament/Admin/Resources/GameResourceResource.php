@@ -2,10 +2,23 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Admin\Resources\GameResourceResource\Pages\ListGameResources;
+use App\Filament\Admin\Resources\GameResourceResource\Pages\CreateGameResource;
+use App\Filament\Admin\Resources\GameResourceResource\Pages\ViewGameResource;
+use App\Filament\Admin\Resources\GameResourceResource\Pages\EditGameResource;
 use App\Models\Resource as GameResource;
 use App\Models\Player;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,23 +31,23 @@ class GameResourceResource extends Resource
 {
     protected static ?string $model = GameResource::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-currency-dollar';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-currency-dollar';
 
-    protected static ?string $navigationGroup = 'Game Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Game Management';
 
     protected static ?string $navigationLabel = 'Player Resources';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('player_id')
+        return $schema
+            ->components([
+                Select::make('player_id')
                     ->relationship('player', 'username')
                     ->searchable()
                     ->preload()
                     ->required()
                     ->label('Player'),
-                Forms\Components\Select::make('resource_type')
+                Select::make('resource_type')
                     ->options([
                         'gold' => 'Gold',
                         'wood' => 'Wood',
@@ -46,7 +59,7 @@ class GameResourceResource extends Resource
                     ])
                     ->required()
                     ->label('Resource Type'),
-                Forms\Components\TextInput::make('quantity')
+                TextInput::make('quantity')
                     ->numeric()
                     ->default(0)
                     ->minValue(0)
@@ -58,11 +71,11 @@ class GameResourceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('player.username')
+                TextColumn::make('player.username')
                     ->searchable()
                     ->sortable()
                     ->label('Player'),
-                Tables\Columns\TextColumn::make('resource_type')
+                TextColumn::make('resource_type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'gold' => 'warning',
@@ -76,21 +89,21 @@ class GameResourceResource extends Resource
                     })
                     ->sortable()
                     ->label('Resource Type'),
-                Tables\Columns\TextColumn::make('quantity')
+                TextColumn::make('quantity')
                     ->numeric()
                     ->sortable()
                     ->formatStateUsing(fn ($state) => number_format($state)),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('resource_type')
+                SelectFilter::make('resource_type')
                     ->options([
                         'gold' => 'Gold',
                         'wood' => 'Wood',
@@ -100,19 +113,19 @@ class GameResourceResource extends Resource
                         'energy' => 'Energy',
                         'gems' => 'Gems',
                     ]),
-                Tables\Filters\SelectFilter::make('player')
+                SelectFilter::make('player')
                     ->relationship('player', 'username')
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -127,10 +140,10 @@ class GameResourceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListGameResources::route('/'),
-            'create' => Pages\CreateGameResource::route('/create'),
-            'view' => Pages\ViewGameResource::route('/{record}'),
-            'edit' => Pages\EditGameResource::route('/{record}/edit'),
+            'index' => ListGameResources::route('/'),
+            'create' => CreateGameResource::route('/create'),
+            'view' => ViewGameResource::route('/{record}'),
+            'edit' => EditGameResource::route('/{record}/edit'),
         ];
     }
 }
