@@ -24,6 +24,8 @@ class ManageGeneralSettings extends SettingsPage
 
     protected static ?string $navigationLabel = 'General Settings';
 
+    protected static ?int $navigationSort = 2;
+
     public function form(Schema $schema): Schema
     {
         return $schema
