@@ -37,6 +37,8 @@ class GameResourceResource extends Resource
 
     protected static ?string $navigationLabel = 'Player Resources';
 
+    protected static ?int $navigationSort = 4;
+
     public static function form(Schema $schema): Schema
     {
         return $schema
