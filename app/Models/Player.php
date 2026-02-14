@@ -62,6 +62,11 @@ class Player extends Model
         return $this->hasOne(Player_Profile::class);
     }
 
+    public function quests()
+    {
+        return $this->hasMany(Player_Quest::class);
+    }
+
     public function guildMemberships()
     {
         return $this->hasMany(Guild_Membership::class);
@@ -77,6 +82,16 @@ class Player extends Model
         return $this->hasMany(Player_Item::class);
     }
 
+    public function statistics()
+    {
+        return $this->hasOne(PlayerStatistic::class);
+    }
+
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'player_achievements')
+            ->withPivot('unlocked_at', 'progress')
+            ->withTimestamps();
     public function quests()
     {
         return $this->hasMany(Player_Quest::class);
