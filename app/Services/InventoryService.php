@@ -100,7 +100,7 @@ class InventoryService
             return false;
         }
 
-        if ($playerItem->quantity == $quantity) {
+        if ($playerItem->quantity === $quantity) {
             $playerItem->delete();
         } else {
             $playerItem->decrement('quantity', $quantity);
