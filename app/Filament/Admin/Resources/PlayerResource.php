@@ -69,6 +69,16 @@ class PlayerResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('rank')
+                    ->label('Rank')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn ($state) => match(true) {
+                        $state === 1 => 'success',
+                        $state <= 10 => 'warning',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => $state ? '#' . $state : 'Unranked'),
                 TextColumn::make('username')
                     ->searchable()
                     ->sortable(),
@@ -81,6 +91,11 @@ class PlayerResource extends Resource
                 TextColumn::make('experience')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('score')
+                    ->label('Total Score')
+                    ->numeric()
+                    ->sortable()
+                    ->default(0),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,6 +109,9 @@ class PlayerResource extends Resource
                 Filter::make('high_level')
                     ->query(fn (Builder $query): Builder => $query->where('level', '>=', 10))
                     ->label('High Level Players (10+)'),
+                Filter::make('top_ranked')
+                    ->query(fn (Builder $query): Builder => $query->whereNotNull('rank')->where('rank', '<=', 100))
+                    ->label('Top 100 Ranked'),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -104,7 +122,8 @@ class PlayerResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('rank', 'asc');
     }
 
     public static function getRelations(): array

@@ -15,6 +15,9 @@ class Player extends Model
         'password',
         'level',
         'experience',
+        'rank',
+        'score',
+        'last_rank_update',
     ];
 
 
@@ -26,5 +29,17 @@ class Player extends Model
 
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_rank_update' => 'datetime',
     ];
+
+    /**
+     * Calculate score based on player performance metrics.
+     */
+    public function calculateScore(): int
+    {
+        $levelScore = $this->level * 100;
+        $experienceScore = $this->experience;
+        
+        return $levelScore + $experienceScore;
+    }
 }
