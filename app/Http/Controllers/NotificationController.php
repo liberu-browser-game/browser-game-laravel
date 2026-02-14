@@ -21,9 +21,15 @@ class NotificationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $player = $request->user()->player ?? null;
+        // Get the authenticated player (either from user->player or Player model directly)
+        $player = $request->user();
+        
+        // If authenticated as User, try to get the player relationship
+        if ($player instanceof \App\Models\User) {
+            $player = $player->player ?? null;
+        }
 
-        if (!$player) {
+        if (!$player || !($player instanceof \App\Models\Player)) {
             return response()->json(['error' => 'Player not found'], 404);
         }
 
@@ -41,9 +47,13 @@ class NotificationController extends Controller
      */
     public function unread(Request $request): JsonResponse
     {
-        $player = $request->user()->player ?? null;
+        $player = $request->user();
+        
+        if ($player instanceof \App\Models\User) {
+            $player = $player->player ?? null;
+        }
 
-        if (!$player) {
+        if (!$player || !($player instanceof \App\Models\Player)) {
             return response()->json(['error' => 'Player not found'], 404);
         }
 
@@ -60,9 +70,13 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, $id): JsonResponse
     {
-        $player = $request->user()->player ?? null;
+        $player = $request->user();
+        
+        if ($player instanceof \App\Models\User) {
+            $player = $player->player ?? null;
+        }
 
-        if (!$player) {
+        if (!$player || !($player instanceof \App\Models\Player)) {
             return response()->json(['error' => 'Player not found'], 404);
         }
 
@@ -87,9 +101,13 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
-        $player = $request->user()->player ?? null;
+        $player = $request->user();
+        
+        if ($player instanceof \App\Models\User) {
+            $player = $player->player ?? null;
+        }
 
-        if (!$player) {
+        if (!$player || !($player instanceof \App\Models\Player)) {
             return response()->json(['error' => 'Player not found'], 404);
         }
 
@@ -105,9 +123,13 @@ class NotificationController extends Controller
      */
     public function count(Request $request): JsonResponse
     {
-        $player = $request->user()->player ?? null;
+        $player = $request->user();
+        
+        if ($player instanceof \App\Models\User) {
+            $player = $player->player ?? null;
+        }
 
-        if (!$player) {
+        if (!$player || !($player instanceof \App\Models\Player)) {
             return response()->json(['error' => 'Player not found'], 404);
         }
 

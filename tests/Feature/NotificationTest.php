@@ -24,13 +24,7 @@ class NotificationTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        
-        // Run migrations
-        $this->artisan('migrate');
-    }
+
 
     public function test_quest_completed_event_creates_notification()
     {
