@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Widgets\GameStatsOverview;
+use App\Filament\Admin\Widgets\ItemTypeChart;
+use App\Filament\Admin\Widgets\PlayerLevelChart;
+use App\Filament\Admin\Widgets\RecentPlayersTable;
 use App\Filament\App\Pages;
 use App\Http\Middleware\TeamsPermission;
 use App\Models\Team;
@@ -10,6 +14,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages as FilamentPage;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -44,15 +49,29 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
-            ->discoverWidgets(in: app_path('Filament/Admin/Widgets/Home'), for: 'App\\Filament\\Admin\\Widgets\\Home')
             ->pages([
                 FilamentPage\Dashboard::class,
                 Pages\EditProfile::class,
-                // Pages\ApiTokenManagerPage::class,
-            ])->widgets([
-                Widgets\AccountWidget::class,
-                // Widgets\FilamentInfoWidget::class,
             ])
+            ->widgets([
+                Widgets\AccountWidget::class,
+                GameStatsOverview::class,
+                PlayerLevelChart::class,
+                ItemTypeChart::class,
+                RecentPlayersTable::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make('Game Management')
+                    ->icon('heroicon-o-puzzle-piece')
+                    ->collapsible(),
+                NavigationGroup::make('System')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsed()
+                    ->collapsible(),
+            ])
+            ->sidebarCollapsibleOnDesktop()
+            ->brandName('Game Admin')
+            ->favicon(asset('favicon.ico'))
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

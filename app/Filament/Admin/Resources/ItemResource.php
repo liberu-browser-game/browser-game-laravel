@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\ViewAction;
@@ -13,6 +14,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ReplicateAction;
 use App\Filament\Admin\Resources\ItemResource\Pages\ListItems;
 use App\Filament\Admin\Resources\ItemResource\Pages\CreateItem;
 use App\Filament\Admin\Resources\ItemResource\Pages\ViewItem;
@@ -37,35 +39,51 @@ class ItemResource extends Resource
 
     protected static ?string $navigationLabel = 'Items';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('description')
-                    ->maxLength(1000)
-                    ->rows(4),
-                Select::make('type')
-                    ->options([
-                        'weapon' => 'Weapon',
-                        'armor' => 'Armor',
-                        'consumable' => 'Consumable',
-                        'material' => 'Material',
-                        'quest' => 'Quest Item',
-                        'misc' => 'Miscellaneous',
+                Section::make('Item Details')
+                    ->description('Basic item information')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('The name of the item'),
+                        Textarea::make('description')
+                            ->maxLength(1000)
+                            ->rows(4)
+                            ->helperText('A description of the item and its effects'),
+                    ]),
+
+                Section::make('Item Properties')
+                    ->description('Configure item type and rarity')
+                    ->schema([
+                        Select::make('type')
+                            ->options([
+                                'weapon' => 'Weapon',
+                                'armor' => 'Armor',
+                                'consumable' => 'Consumable',
+                                'material' => 'Material',
+                                'quest' => 'Quest Item',
+                                'misc' => 'Miscellaneous',
+                            ])
+                            ->required()
+                            ->helperText('The category of this item'),
+                        Select::make('rarity')
+                            ->options([
+                                'common' => 'Common',
+                                'uncommon' => 'Uncommon',
+                                'rare' => 'Rare',
+                                'epic' => 'Epic',
+                                'legendary' => 'Legendary',
+                            ])
+                            ->required()
+                            ->helperText('How rare this item is'),
                     ])
-                    ->required(),
-                Select::make('rarity')
-                    ->options([
-                        'common' => 'Common',
-                        'uncommon' => 'Uncommon',
-                        'rare' => 'Rare',
-                        'epic' => 'Epic',
-                        'legendary' => 'Legendary',
-                    ])
-                    ->required(),
+                    ->columns(2),
             ]);
     }
 
@@ -138,6 +156,11 @@ class ItemResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                ReplicateAction::make()
+                    ->excludeAttributes(['created_at', 'updated_at'])
+                    ->beforeReplicaSaved(function (Item $replica): void {
+                        $replica->name = $replica->name . ' (Copy)';
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
