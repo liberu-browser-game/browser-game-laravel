@@ -6,6 +6,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Actions\ViewAction;
@@ -13,6 +14,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ReplicateAction;
 use App\Filament\Admin\Resources\QuestResource\Pages\ListQuests;
 use App\Filament\Admin\Resources\QuestResource\Pages\CreateQuest;
 use App\Filament\Admin\Resources\QuestResource\Pages\ViewQuest;
@@ -38,28 +40,59 @@ class QuestResource extends Resource
 
     protected static ?string $navigationLabel = 'Quests';
 
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'description'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'XP Reward' => $record->experience_reward,
+            'Item Reward' => $record->itemReward?->name ?? 'None',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Textarea::make('description')
-                    ->required()
-                    ->maxLength(1000)
-                    ->rows(4),
-                TextInput::make('experience_reward')
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->label('Experience Reward'),
-                Select::make('item_reward_id')
-                    ->relationship('itemReward', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->label('Item Reward')
-                    ->placeholder('Select an item reward (optional)'),
+                Section::make('Quest Details')
+                    ->description('Basic quest information')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('A descriptive name for the quest'),
+                        Textarea::make('description')
+                            ->required()
+                            ->maxLength(1000)
+                            ->rows(4)
+                            ->helperText('The quest story and objectives'),
+                    ]),
+
+                Section::make('Rewards')
+                    ->description('Configure quest rewards')
+                    ->schema([
+                        TextInput::make('experience_reward')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->label('Experience Reward')
+                            ->helperText('XP awarded upon quest completion'),
+                        Select::make('item_reward_id')
+                            ->relationship('itemReward', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->label('Item Reward')
+                            ->placeholder('Select an item reward (optional)')
+                            ->helperText('Item awarded upon quest completion'),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -107,6 +140,11 @@ class QuestResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                ReplicateAction::make()
+                    ->excludeAttributes(['created_at', 'updated_at'])
+                    ->beforeReplicaSaved(function (Quest $replica): void {
+                        $replica->name = $replica->name . ' (Copy)';
+                    }),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
