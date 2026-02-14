@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Player;
+use App\Events\PlayerLeveledUp;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,6 +75,9 @@ class PlayerDashboard extends Component
         while ($this->player->experience >= ($this->player->level * 100)) {
             $this->player->level++;
             $this->dispatch('player-leveled-up', level: $this->player->level);
+            
+            // Broadcast level up event
+            event(new PlayerLeveledUp($this->player, $this->player->level));
         }
         
         $this->player->save();

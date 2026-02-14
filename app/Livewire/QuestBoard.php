@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\Player;
 use App\Models\Quest;
 use App\Models\Player_Quest;
+use App\Events\QuestCompleted as QuestCompletedEvent;
+use App\Events\PlayerLeveledUp;
 use Livewire\Component;
 
 class QuestBoard extends Component
@@ -94,12 +96,16 @@ class QuestBoard extends Component
         ]);
 
         // Award experience
-        $this->player->experience += $quest->experience_reward;
+        $experienceGained = $quest->experience_reward;
+        $this->player->experience += $experienceGained;
         
         // Check for level up
         while ($this->player->experience >= ($this->player->level * 100)) {
             $this->player->level++;
             $this->dispatch('player-leveled-up', level: $this->player->level);
+            
+            // Broadcast level up event
+            event(new PlayerLeveledUp($this->player, $this->player->level));
         }
         
         $this->player->save();
@@ -123,11 +129,14 @@ class QuestBoard extends Component
             }
         }
 
+        // Broadcast quest completed event
+        event(new QuestCompletedEvent($this->player, $quest, $experienceGained));
+
         $this->loadQuests();
-        $this->dispatch('quest-completed', questId: $questId, experienceReward: $quest->experience_reward);
+        $this->dispatch('quest-completed', questId: $questId, experienceReward: $experienceGained);
         $this->dispatch('player-updated');
         
-        session()->flash('success', "Quest '{$quest->name}' completed! You earned {$quest->experience_reward} XP!");
+        session()->flash('success', "Quest '{$quest->name}' completed! You earned {$experienceGained} XP!");
     }
 
     public function abandonQuest($questId)

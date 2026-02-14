@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\Player;
 use App\Models\Guild;
 use App\Models\Guild_Membership;
+use App\Events\GuildMemberJoined;
+use App\Events\GuildMemberLeft;
 use Livewire\Component;
 
 class GuildPanel extends Component
@@ -101,6 +103,9 @@ class GuildPanel extends Component
             'updated_at' => now(),
         ]);
 
+        // Broadcast guild member joined event
+        event(new GuildMemberJoined($guild, $this->player));
+
         $this->loadGuilds();
         $this->dispatch('guild-joined', guildId: $guildId);
         session()->flash('success', "You joined {$guild->name}!");
@@ -117,6 +122,9 @@ class GuildPanel extends Component
 
         // Leave the guild
         $this->player->guilds()->detach($guildId);
+
+        // Broadcast guild member left event
+        event(new GuildMemberLeft($guild, $this->player));
 
         // Clear selected guild if it was the one we left
         if ($this->selectedGuild == $guildId) {
