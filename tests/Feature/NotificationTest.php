@@ -24,8 +24,6 @@ class NotificationTest extends TestCase
 {
     use RefreshDatabase;
 
-
-
     public function test_quest_completed_event_creates_notification()
     {
         Notification::fake();

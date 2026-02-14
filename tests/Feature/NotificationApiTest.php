@@ -13,8 +13,6 @@ class NotificationApiTest extends TestCase
 {
     use RefreshDatabase;
 
-
-
     public function test_unauthenticated_user_cannot_access_notifications()
     {
         $response = $this->getJson('/api/notifications');
