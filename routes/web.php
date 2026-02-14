@@ -23,6 +23,13 @@ Route::get('/', fn () => view('welcome'));
 
 Route::redirect('/dashboard', '/app')->name('dashboard');
 
+// Game Routes
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::get('/game', function () {
+        return view('game.dashboard');
+    })->name('game.dashboard');
+});
+
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
     ->name('team-invitations.accept');
