@@ -28,6 +28,21 @@ class Player extends Model
         'email_verified_at' => 'datetime',
     ];
 
+    public function quests()
+    {
+        return $this->belongsToMany(Quest::class, 'player__quests')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
+
+    public function activeQuests()
+    {
+        return $this->quests()->wherePivot('status', 'in-progress');
+    }
+
+    public function completedQuests()
+    {
+        return $this->quests()->wherePivot('status', 'completed');
     public function items()
     {
         return $this->hasMany(Player_Item::class);

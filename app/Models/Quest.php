@@ -21,4 +21,11 @@ class Quest extends Model
     {
         return $this->belongsTo(Item::class, 'item_reward_id');
     }
+
+    public function players()
+    {
+        return $this->belongsToMany(Player::class, 'player__quests')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
 }
