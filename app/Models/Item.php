@@ -15,4 +15,22 @@ class Item extends Model
         'type',
         'rarity',
     ];
+
+    /**
+     * Get all player items that have this item.
+     */
+    public function playerItems()
+    {
+        return $this->hasMany(Player_Item::class);
+    }
+
+    /**
+     * Get all players that have this item.
+     */
+    public function players()
+    {
+        return $this->belongsToMany(Player::class, 'player__items')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }
