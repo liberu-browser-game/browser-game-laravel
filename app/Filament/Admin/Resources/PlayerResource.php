@@ -42,6 +42,26 @@ class PlayerResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $recordTitleAttribute = 'username';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['username', 'email', 'level'];
+    }
+
+    public static function getGlobalSearchResultTitle($record): string
+    {
+        return $record->username;
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Email' => $record->email,
+            'Level' => $record->level,
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -143,6 +163,24 @@ class PlayerResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('adjustLevel')
+                        ->label('Adjust Level')
+                        ->icon('heroicon-o-arrow-trending-up')
+                        ->form([
+                            Forms\Components\TextInput::make('level_change')
+                                ->label('Level Adjustment')
+                                ->helperText('Use positive numbers to increase, negative to decrease')
+                                ->numeric()
+                                ->required(),
+                        ])
+                        ->action(function (array $data, $records) {
+                            $records->each(function ($record) use ($data) {
+                                $newLevel = max(1, min(100, $record->level + $data['level_change']));
+                                $record->update(['level' => $newLevel]);
+                            });
+                        })
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

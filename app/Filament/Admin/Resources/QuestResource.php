@@ -42,6 +42,21 @@ class QuestResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'description'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'XP Reward' => $record->experience_reward,
+            'Item Reward' => $record->itemReward?->name ?? 'None',
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema

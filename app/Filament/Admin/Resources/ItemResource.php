@@ -41,6 +41,21 @@ class ItemResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'type', 'rarity'];
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Type' => ucfirst($record->type),
+            'Rarity' => ucfirst($record->rarity),
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -166,6 +181,28 @@ class ItemResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('updateRarity')
+                        ->label('Update Rarity')
+                        ->icon('heroicon-o-star')
+                        ->form([
+                            Forms\Components\Select::make('rarity')
+                                ->label('New Rarity')
+                                ->options([
+                                    'common' => 'Common',
+                                    'uncommon' => 'Uncommon',
+                                    'rare' => 'Rare',
+                                    'epic' => 'Epic',
+                                    'legendary' => 'Legendary',
+                                ])
+                                ->required(),
+                        ])
+                        ->action(function (array $data, $records) {
+                            $records->each(function ($record) use ($data) {
+                                $record->update(['rarity' => $data['rarity']]);
+                            });
+                        })
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }

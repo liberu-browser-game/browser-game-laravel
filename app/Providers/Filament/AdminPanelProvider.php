@@ -6,6 +6,8 @@ use App\Filament\Admin\Widgets\GameStatsOverview;
 use App\Filament\Admin\Widgets\ItemTypeChart;
 use App\Filament\Admin\Widgets\PlayerLevelChart;
 use App\Filament\Admin\Widgets\RecentPlayersTable;
+use App\Filament\Admin\Widgets\ContentStatsChart;
+use App\Filament\Admin\Widgets\QuickActionsWidget;
 use App\Filament\App\Pages;
 use App\Http\Middleware\TeamsPermission;
 use App\Models\Team;
@@ -55,9 +57,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 Widgets\AccountWidget::class,
+                QuickActionsWidget::class,
                 GameStatsOverview::class,
                 PlayerLevelChart::class,
                 ItemTypeChart::class,
+                ContentStatsChart::class,
                 RecentPlayersTable::class,
             ])
             ->navigationGroups([
@@ -72,6 +76,9 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->brandName('Game Admin')
             ->favicon(asset('favicon.ico'))
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
