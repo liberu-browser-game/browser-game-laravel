@@ -258,47 +258,47 @@ Players (1) ─────────── (1) Player_Profiles
 
 ```php
 // One-to-One
-public function profile() -> Player_Profile
+public function profile(): HasOne // Returns Player_Profile
     
 // One-to-Many
-public function resources() -> Collection<Resource>
-public function guildMemberships() -> Collection<Guild_Membership>
+public function resources(): HasMany // Returns Collection<Resource>
+public function guildMemberships(): HasMany // Returns Collection<Guild_Membership>
 
 // Many-to-Many
-public function items() -> Collection<Item>
-public function quests() -> Collection<Quest>
-public function guilds() -> Collection<Guild>
+public function items(): BelongsToMany // Returns Collection<Item>
+public function quests(): BelongsToMany // Returns Collection<Quest>
+public function guilds(): BelongsToMany // Returns Collection<Guild>
 ```
 
 ### Guild Model
 
 ```php
 // One-to-Many
-public function memberships() -> Collection<Guild_Membership>
+public function memberships(): HasMany // Returns Collection<Guild_Membership>
 
 // Many-to-Many
-public function players() -> Collection<Player>
-public function leaders() -> Collection<Player> // Players with 'leader' role
+public function players(): BelongsToMany // Returns Collection<Player>
+public function leaders(): BelongsToMany // Returns Collection<Player> (filtered by role)
 ```
 
 ### Item Model
 
 ```php
 // Many-to-Many
-public function players() -> Collection<Player>
+public function players(): BelongsToMany // Returns Collection<Player>
 
 // One-to-Many (inverse)
-public function questRewards() -> Collection<Quest>
+public function questRewards(): HasMany // Returns Collection<Quest>
 ```
 
 ### Quest Model
 
 ```php
 // Many-to-One
-public function itemReward() -> Item
+public function itemReward(): BelongsTo // Returns Item
 
 // Many-to-Many
-public function players() -> Collection<Player>
+public function players(): BelongsToMany // Returns Collection<Player>
 ```
 
 ## Migration Order
