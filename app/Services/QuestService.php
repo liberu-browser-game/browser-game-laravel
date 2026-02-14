@@ -107,7 +107,7 @@ class QuestService
         // Award item
         if ($quest->item_reward_id) {
             // Add item to player's inventory
-            $playerItem = DB::table('player__items')->insert([
+            DB::table('player__items')->insert([
                 'player_id' => $player->id,
                 'item_id' => $quest->item_reward_id,
                 'quantity' => 1,
