@@ -43,6 +43,35 @@ class Player extends Model
     public function completedQuests()
     {
         return $this->quests()->wherePivot('status', 'completed');
+    }
+
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'player__items')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
+    public function resources()
+    {
+        return $this->hasMany(Resource::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Player_Profile::class);
+    }
+
+    public function guildMemberships()
+    {
+        return $this->hasMany(Guild_Membership::class);
+    }
+
+    public function guilds()
+    {
+        return $this->belongsToMany(Guild::class, 'guild__memberships')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
     public function items()
     {
         return $this->hasMany(Player_Item::class);
