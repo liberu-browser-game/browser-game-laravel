@@ -8,32 +8,283 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Open Source Love](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-red.svg)
 
+## Welcome to Liberu's Persistent Browser-Based RPG
 
-## Welcome to Liberu, our visionary open-source initiative that marries the power of Laravel 12, PHP 8.5 and Filament 5.2 to redefine the landscape of web development.
+A comprehensive, **feature-full persistent browser-based game** built with Laravel 12, PHP 8.5, and Filament 5.2. Experience engaging gameplay loops, competitive elements, and a thriving player-driven economy!
 
 [![Contact us on WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/+447762430333)
 [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/@liberusoftware)
-[![Facebook](https://img.shields.io/badge/Facebook-%231877F2.svg?style=for-the-badge&logo=Facebook&logoColor=white)](https://www.facebook.com/liberusoftware)
-[![Instagram](https://img.shields.io/badge/Instagram-%23E4405F.svg?style=for-the-badge&logo=Instagram&logoColor=white)](https://www.instagram.com/liberusoftware)
-[![X](https://img.shields.io/badge/X-%23000000.svg?style=for-the-badge&logo=X&logoColor=white)](https://www.x.com/liberusoftware)
-[![LinkedIn](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/liberugroup)
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://www.github.com/liberusoftware)
 
 [![Install](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/install.yml/badge.svg)](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/install.yml)
 [![Tests](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/tests.yml)
-[![Docker](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/main.yml/badge.svg)](https://github.com/liberu-browser-game/browser-game-laravel/actions/workflows/main.yml)
-[![Codecov](https://codecov.io/gh/liberu-browser-game/browser-game-laravel/branch/main/graph/badge.svg)](https://codecov.io/gh/liberu-browser-game/browser-game-laravel)
-
-A modular Laravel application scaffold used for the Liberu browser-based game ecosystem.
-
-Quick highlights:
-- PHP 8.4, Laravel 12, Filament, Jetstream, Livewire
-- Modular architecture for extensibility
-- Admin panel, user profiles, notifications, and real-time features
 
 ---
 
-## Features
+## 🎮 Game Features
+
+### Core Gameplay Systems
+
+#### ⚔️ Combat System
+- **PvE Battles**: Fight AI opponents with dynamic difficulty scaling
+- **Turn-Based Mechanics**: Strategic combat with damage calculations
+- **Battle Logs**: Detailed round-by-round combat history
+- **Victory Rewards**: Earn experience and gold
+- **Healing System**: Manage health between battles
+
+#### 📈 Character Progression
+- **Core Stats**: Strength, Defense, Agility, Intelligence
+- **Resource Management**: Health and Mana pools
+- **Level System**: XP-based progression with meaningful rewards
+- **Stat Points**: Customize your character (5 points per level)
+- **Equipment Bonuses**: Items enhance your capabilities
+
+#### 🛡️ Equipment System
+- **6 Equipment Slots**: Weapon, Armor, Helmet, Boots, Gloves, Accessory
+- **Stat Bonuses**: Each piece provides specific increases
+- **Rarity Tiers**: Common → Uncommon → Rare → Legendary
+- **Level Requirements**: Progressive gear unlocking
+
+#### ✨ Skills & Abilities
+- **Diverse Skill Types**: Attack, Defense, Heal, Buff
+- **Mana System**: Strategic resource management
+- **Cooldown Mechanics**: Prevents ability spam
+- **Skill Progression**: Level up for increased power
+
+#### 🔨 Crafting System
+- **Recipe Learning**: Discover through quests and exploration
+- **Material Gathering**: Collect resources from various sources
+- **Success Rates**: Variable difficulty adds challenge
+- **Quality Crafting**: Create powerful equipment
+
+#### 💰 Player Economy
+- **Marketplace Trading**: Buy and sell with other players
+- **Custom Pricing**: Set your own market prices
+- **Secure Transactions**: Safe gold and item transfers
+- **Supply & Demand**: Dynamic player-driven economy
+
+#### 🏆 Competitive Features
+- **Leaderboards**: Compete in 4 categories (Level, PvP, Quests, Wealth)
+- **Rankings**: See top 20 players
+- **Daily Rewards**: Login bonuses with streak system
+- **Achievement Tracking**: 11 predefined achievements
+
+#### 👥 Social Features
+- **Guild System**: Join communities, participate in activities
+- **Guild Roles**: Leader, Officer, Member hierarchy
+- **Quests**: Complete objectives for rewards and items
+- **Real-time Notifications**: Stay informed of game events
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- PHP 8.3+ and Composer
+- MySQL or PostgreSQL database
+- Node.js and NPM
+
+### Installation
+
+```bash
+# Clone repository
+git clone https://github.com/liberu-browser-game/browser-game-laravel.git
+cd browser-game-laravel
+
+# Install dependencies
+composer install
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Configure database in .env
+# Then run:
+php artisan migrate
+php artisan db:seed --class=GameSeeder
+php artisan db:seed --class=GameContentSeeder
+
+# Build assets
+npm run build
+
+# Start server
+php artisan serve
+```
+
+Visit `http://localhost:8000` and start playing!
+
+**📖 For detailed setup instructions, see [Quick Start Guide](docs/QUICK_START.md)**
+
+---
+
+## 📚 Documentation
+
+- **[Quick Start Guide](docs/QUICK_START.md)** - Get started in minutes
+- **[Game Features](docs/GAME_FEATURES.md)** - Complete feature documentation
+- **[Enhancement Summary](docs/ENHANCEMENT_SUMMARY.md)** - Technical overview
+- **[Admin Panel Guide](docs/ADMIN_PANEL_GUIDE.md)** - Admin documentation
+- **[Mobile Responsiveness](docs/MOBILE_RESPONSIVENESS.md)** - Mobile optimization
+
+---
+
+## 🎯 Game Loop
+
+**Daily Engagement Flow:**
+1. **Login** → Claim daily reward (streak bonuses!)
+2. **Combat** → Battle enemies for XP and gold
+3. **Quests** → Complete objectives for rewards
+4. **Crafting** → Create powerful equipment
+5. **Trading** → Buy/sell on marketplace
+6. **Social** → Guild activities and chat
+7. **Compete** → Climb the leaderboards
+
+---
+
+## 🌟 Key Features
+
+### For Players
+- ✅ Persistent character progression
+- ✅ Engaging combat mechanics
+- ✅ Player-driven economy
+- ✅ Competitive leaderboards
+- ✅ Daily login rewards
+- ✅ Guild system
+- ✅ Crafting & trading
+- ✅ Mobile-responsive design
+
+### For Developers
+- ✅ Laravel 12 best practices
+- ✅ Livewire real-time UI
+- ✅ Filament admin panel
+- ✅ Service layer architecture
+- ✅ Comprehensive testing
+- ✅ Security-first approach
+- ✅ Well-documented codebase
+- ✅ Modular design
+
+---
+
+## 🛠️ Technical Stack
+
+**Backend:**
+- Laravel 12
+- PHP 8.5
+- MySQL/PostgreSQL
+- Laravel Octane
+
+**Frontend:**
+- Livewire 4.1
+- Alpine.js
+- Tailwind CSS
+- Blade Templates
+
+**Admin:**
+- Filament 5.2
+- Real-time dashboard
+- Player management
+
+**Security:**
+- SQL injection prevention
+- XSS protection
+- CSRF tokens
+- Secure authentication
+
+---
+
+## 📊 Statistics
+
+- **Game Systems**: 8 major features
+- **Database Tables**: 20+ tables
+- **Livewire Components**: 9 components
+- **Documentation**: 20+ KB of guides
+- **Code Quality**: PSR-12 compliant
+
+---
+
+## 🎨 Screenshots
+
+*Combat Arena with turn-based battles*
+*Marketplace for player trading*
+*Leaderboards showing top players*
+*Daily rewards with streak system*
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Follow PSR-12 coding standards
+4. Include tests for new features
+5. Submit a pull request
+
+See [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+---
+
+## 📱 Mobile Support
+
+Fully optimized for mobile devices:
+- Responsive design (xs: 475px, sm: 640px, md: 768px, lg: 1024px+)
+- Touch-friendly interface (44px minimum touch targets)
+- Safe area support for notched devices
+- Dark mode support
+- Optimized performance (~10KB gzipped CSS)
+
+---
+
+## 🗺️ Roadmap
+
+### Current Version (v2.0)
+- ✅ Combat system
+- ✅ Character progression
+- ✅ Equipment & skills
+- ✅ Crafting system
+- ✅ Marketplace
+- ✅ Leaderboards
+- ✅ Daily rewards
+
+### Upcoming Features
+- 🔜 PvP Arena
+- 🔜 Dungeons & Boss Battles
+- 🔜 Pet/Companion System
+- 🔜 Housing System
+- 🔜 Seasonal Events
+- 🔜 Mobile App
+- 🔜 Real-time Chat
+- 🔜 Tournament System
+
+---
+
+## 📞 Support
+
+- **Documentation**: See `/docs` directory
+- **Issues**: [GitHub Issues](https://github.com/liberu-browser-game/browser-game-laravel/issues)
+- **Discord**: Join our community
+- **Email**: support@liberu.co.uk
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+---
+
+## 🌐 Liberu Ecosystem
+
+Part of the larger Liberu software ecosystem:
+- [Accounting](https://github.com/liberu-accounting/accounting-laravel)
+- [CRM](https://github.com/liberu-crm/crm-laravel)
+- [E-commerce](https://github.com/liberu-ecommerce/ecommerce-laravel)
+- [And more...](https://github.com/liberusoftware)
+
+---
+
+**Built with ❤️ by the Liberu Team**
+
+*Start your adventure today!* 🎮✨
 - Secure authentication (Jetstream)
 - Profiles with avatars and metadata
 - Real-time notifications and private messaging
