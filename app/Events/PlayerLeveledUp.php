@@ -3,6 +3,11 @@
 namespace App\Events;
 
 use App\Models\Player;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
+
+class PlayerLeveledUp
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -15,6 +20,13 @@ class PlayerLeveledUp implements ShouldBroadcast
 
     public $player;
     public $newLevel;
+    public $oldLevel;
+
+    public function __construct(Player $player, $newLevel, $oldLevel)
+    {
+        $this->player = $player;
+        $this->newLevel = $newLevel;
+        $this->oldLevel = $oldLevel;
     public $message;
 
     /**

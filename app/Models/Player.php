@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Player extends Model
 {
     use HasFactory;
+    use Notifiable;
 
     protected $fillable = [
         'username',
@@ -28,6 +30,14 @@ class Player extends Model
         'email_verified_at' => 'datetime',
     ];
 
+    public function gameNotifications()
+    {
+        return $this->hasMany(GameNotification::class);
+    }
+
+    public function unreadNotifications()
+    {
+        return $this->hasMany(GameNotification::class)->where('is_read', false);
     // Relationships
     public function profile()
     {
