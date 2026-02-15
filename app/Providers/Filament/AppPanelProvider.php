@@ -4,6 +4,10 @@ namespace App\Providers\Filament;
 
 use App\Filament\App\Pages;
 use App\Filament\App\Pages\EditProfile;
+use App\Filament\App\Widgets\PlayerStatsWidget;
+use App\Filament\App\Widgets\ActiveQuestsWidget;
+use App\Filament\App\Widgets\InventoryWidget;
+use App\Filament\App\Widgets\SocialLinksWidget;
 use App\Http\Middleware\TeamsPermission;
 use App\Listeners\CreatePersonalTeam;
 use App\Listeners\SwitchTeam;
@@ -66,6 +70,10 @@ class AppPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/App/Widgets/Home'), for: 'App\\Filament\\App\\Widgets\\Home')
             ->widgets([
                 Widgets\AccountWidget::class,
+                PlayerStatsWidget::class,
+                ActiveQuestsWidget::class,
+                InventoryWidget::class,
+                SocialLinksWidget::class,
                 // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([

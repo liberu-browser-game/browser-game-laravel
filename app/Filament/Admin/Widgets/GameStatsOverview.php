@@ -17,19 +17,37 @@ class GameStatsOverview extends BaseWidget
             Stat::make('Total Players', Player::count())
                 ->description('Registered players')
                 ->descriptionIcon('heroicon-m-user-group')
-                ->color('success'),
+                ->color('success')
+                ->extraAttributes([
+                    'class' => 'game-stat-card',
+                ]),
             Stat::make('Active Guilds', Guild::count())
                 ->description('Total guilds')
                 ->descriptionIcon('heroicon-m-shield-check')
-                ->color('info'),
+                ->color('info')
+                ->extraAttributes([
+                    'class' => 'game-stat-card',
+                ]),
             Stat::make('Items Available', Item::count())
                 ->description('Total items in game')
                 ->descriptionIcon('heroicon-m-cube')
-                ->color('warning'),
+                ->color('warning')
+                ->extraAttributes([
+                    'class' => 'game-stat-card',
+                ]),
             Stat::make('Quests Available', Quest::count())
                 ->description('Total quests')
                 ->descriptionIcon('heroicon-m-map')
-                ->color('primary'),
+                ->color('primary')
+                ->extraAttributes([
+                    'class' => 'game-stat-card',
+                ]),
         ];
+    }
+    
+    protected function getColumns(): int
+    {
+        // 2 columns on mobile, 4 on desktop
+        return 2;
     }
 }
