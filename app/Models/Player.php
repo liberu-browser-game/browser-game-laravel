@@ -277,6 +277,14 @@ class Player extends Model
     }
 
     /**
+     * Daily rewards.
+     */
+    public function dailyRewards()
+    {
+        return $this->hasMany(DailyReward::class);
+    }
+
+    /**
      * Get total stats (base + equipment bonuses).
      */
     public function getTotalStats(): array
