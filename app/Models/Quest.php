@@ -16,9 +16,17 @@ class Quest extends Model
         'item_reward_id',
     ];
 
-
+    // Relationships
     public function itemReward()
     {
         return $this->belongsTo(Item::class, 'item_reward_id');
     }
+
+    public function players()
+    {
+        return $this->belongsToMany(Player::class, 'player__quests')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
+}
 }

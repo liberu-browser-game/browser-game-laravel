@@ -13,4 +13,29 @@ class Guild extends Model
         'name',
         'description',
     ];
+
+    // Relationships
+    public function memberships()
+    {
+        return $this->hasMany(Guild_Membership::class);
+    }
+
+    public function players()
+    public function members()
+    {
+        return $this->belongsToMany(Player::class, 'guild__memberships')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
+
+    public function leaders()
+    {
+        return $this->belongsToMany(Player::class, 'guild__memberships')
+            ->wherePivot('role', 'leader')
+            ->withPivot('joined_at')
+            ->withTimestamps();
+    public function memberships()
+    {
+        return $this->hasMany(Guild_Membership::class);
+    }
 }

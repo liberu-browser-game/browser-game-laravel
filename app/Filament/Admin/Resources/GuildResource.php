@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
@@ -35,17 +36,32 @@ class GuildResource extends Resource
 
     protected static ?string $navigationLabel = 'Guilds';
 
+    protected static ?int $navigationSort = 5;
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'description'];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true),
-                Textarea::make('description')
-                    ->maxLength(1000)
-                    ->rows(4),
+                Section::make('Guild Information')
+                    ->description('Basic guild details')
+                    ->schema([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Unique name for the guild'),
+                        Textarea::make('description')
+                            ->maxLength(1000)
+                            ->rows(4)
+                            ->helperText('Description of the guild and its purpose'),
+                    ]),
             ]);
     }
 

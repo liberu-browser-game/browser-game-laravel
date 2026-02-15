@@ -4,8 +4,10 @@ namespace App\Filament\Admin\Resources;
 
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
@@ -15,6 +17,9 @@ use App\Filament\Admin\Resources\PlayerResource\Pages\ListPlayers;
 use App\Filament\Admin\Resources\PlayerResource\Pages\CreatePlayer;
 use App\Filament\Admin\Resources\PlayerResource\Pages\ViewPlayer;
 use App\Filament\Admin\Resources\PlayerResource\Pages\EditPlayer;
+use App\Filament\Admin\Resources\PlayerResource\RelationManagers\ItemsRelationManager;
+use App\Filament\Admin\Resources\PlayerResource\RelationManagers\QuestsRelationManager;
+use App\Filament\Admin\Resources\PlayerResource\RelationManagers\ResourcesRelationManager;
 use App\Models\Player;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -35,33 +40,71 @@ class PlayerResource extends Resource
 
     protected static ?string $navigationLabel = 'Players';
 
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $recordTitleAttribute = 'username';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['username', 'email', 'level'];
+    }
+
+    public static function getGlobalSearchResultTitle($record): string
+    {
+        return $record->username;
+    }
+
+    public static function getGlobalSearchResultDetails($record): array
+    {
+        return [
+            'Email' => $record->email,
+            'Level' => $record->level,
+        ];
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('username')
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true),
-                TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(ignoreRecord: true),
-                TextInput::make('password')
-                    ->password()
-                    ->required(fn (string $context): bool => $context === 'create')
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state)),
-                TextInput::make('level')
-                    ->numeric()
-                    ->default(1)
-                    ->minValue(1)
-                    ->maxValue(100),
-                TextInput::make('experience')
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0),
+                Section::make('Account Information')
+                    ->description('Basic player account details')
+                    ->schema([
+                        TextInput::make('username')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Unique username for the player'),
+                        TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Player\'s email address'),
+                        TextInput::make('password')
+                            ->password()
+                            ->required(fn (string $context): bool => $context === 'create')
+                            ->dehydrated(fn ($state) => filled($state))
+                            ->dehydrateStateUsing(fn ($state) => bcrypt($state))
+                            ->helperText('Leave blank to keep current password'),
+                    ])
+                    ->columns(2),
+                
+                Section::make('Game Stats')
+                    ->description('Player game progression and statistics')
+                    ->schema([
+                        TextInput::make('level')
+                            ->numeric()
+                            ->default(1)
+                            ->minValue(1)
+                            ->maxValue(100)
+                            ->helperText('Current player level (1-100)'),
+                        TextInput::make('experience')
+                            ->numeric()
+                            ->default(0)
+                            ->minValue(0)
+                            ->helperText('Total experience points'),
+                    ])
+                    ->columns(2),
             ]);
     }
 
@@ -94,6 +137,23 @@ class PlayerResource extends Resource
                 Filter::make('high_level')
                     ->query(fn (Builder $query): Builder => $query->where('level', '>=', 10))
                     ->label('High Level Players (10+)'),
+                SelectFilter::make('level_range')
+                    ->label('Level Range')
+                    ->options([
+                        '1-10' => 'Beginner (1-10)',
+                        '11-25' => 'Intermediate (11-25)',
+                        '26-50' => 'Advanced (26-50)',
+                        '51-100' => 'Expert (51-100)',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        return match ($data['value'] ?? null) {
+                            '1-10' => $query->whereBetween('level', [1, 10]),
+                            '11-25' => $query->whereBetween('level', [11, 25]),
+                            '26-50' => $query->whereBetween('level', [26, 50]),
+                            '51-100' => $query->whereBetween('level', [51, 100]),
+                            default => $query,
+                        };
+                    }),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -103,6 +163,24 @@ class PlayerResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('adjustLevel')
+                        ->label('Adjust Level')
+                        ->icon('heroicon-o-arrow-trending-up')
+                        ->form([
+                            Forms\Components\TextInput::make('level_change')
+                                ->label('Level Adjustment')
+                                ->helperText('Use positive numbers to increase, negative to decrease')
+                                ->numeric()
+                                ->required(),
+                        ])
+                        ->action(function (array $data, $records) {
+                            $records->each(function ($record) use ($data) {
+                                $newLevel = max(1, min(100, $record->level + $data['level_change']));
+                                $record->update(['level' => $newLevel]);
+                            });
+                        })
+                        ->requiresConfirmation()
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }
@@ -110,7 +188,11 @@ class PlayerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\QuestsRelationManager::class,
+            RelationManagers\AchievementsRelationManager::class,
+            ItemsRelationManager::class,
+            QuestsRelationManager::class,
+            ResourcesRelationManager::class,
         ];
     }
 
