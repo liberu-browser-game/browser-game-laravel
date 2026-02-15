@@ -39,6 +39,26 @@ Quick highlights:
 - Real-time notifications and private messaging
 - Admin management via Filament
 - Modular codebase for feature packages
+- **Mobile-responsive design** - Optimized for phones, tablets, and desktops
+- Touch-friendly game interface with 44px minimum touch targets
+- Progressive web app ready
+
+### Mobile Support
+
+The game interface is fully optimized for mobile devices:
+
+- **Responsive Design**: Mobile-first approach with custom breakpoints (xs: 475px, sm: 640px, md: 768px, lg: 1024px+)
+- **Touch-Friendly**: All interactive elements meet the 44px minimum touch target size (iOS/Android guidelines)
+- **Mobile-Optimized Widgets**: 
+  - Player stats with responsive grid layout
+  - Quest tracker with mobile-friendly cards
+  - Inventory system with touch-optimized slots (3-8 columns based on screen size)
+  - Social links with touch-friendly buttons
+- **Safe Area Support**: Handles notched devices (iPhone X+) with safe area insets
+- **Dark Mode**: Full support with system preference detection
+- **Performance**: Optimized CSS (~10KB gzipped) for fast loading on mobile networks
+
+See [Mobile Responsiveness Guide](./docs/MOBILE_RESPONSIVENESS.md) for detailed documentation.
 
 ---
 
