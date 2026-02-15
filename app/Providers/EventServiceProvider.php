@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Events\AchievementUnlocked;
+use App\Events\GuildInvitationSent;
+use App\Events\PlayerLeveledUp;
+use App\Events\QuestCompleted;
+use App\Listeners\SendAchievementNotification;
+use App\Listeners\SendGuildInvitationNotification;
+use App\Listeners\SendLevelUpNotification;
+use App\Listeners\SendQuestCompletedNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -17,6 +25,18 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+        ],
+        QuestCompleted::class => [
+            SendQuestCompletedNotification::class,
+        ],
+        PlayerLeveledUp::class => [
+            SendLevelUpNotification::class,
+        ],
+        AchievementUnlocked::class => [
+            SendAchievementNotification::class,
+        ],
+        GuildInvitationSent::class => [
+            SendGuildInvitationNotification::class,
         ],
     ];
 
