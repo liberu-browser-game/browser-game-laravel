@@ -29,3 +29,4 @@ class Quest extends Model
             ->withTimestamps();
     }
 }
+}

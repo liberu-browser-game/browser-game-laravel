@@ -24,5 +24,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             GameSeeder::class,
         ]);
+        // Seed quests
+        $this->call(QuestSeeder::class);
     }
 }
