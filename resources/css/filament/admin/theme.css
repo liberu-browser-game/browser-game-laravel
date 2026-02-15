@@ -1,4 +1,7 @@
 /* Filament Admin Theme with Mobile Optimizations */
+/* Note: Filament preset removed due to vendor dependency issues in build environment */
+/* Base Filament styles will be loaded via Vite theme configuration */
+
 @import '../../mobile.css';
 
 @config './tailwind.config.js';

@@ -60,7 +60,8 @@ class ActiveQuestsWidget extends BaseWidget
                 
                 Tables\Columns\TextColumn::make('reward_gold')
                     ->label('Reward')
-                    ->money('USD', divideBy: 1)
+                    ->numeric()
+                    ->suffix(' gold')
                     ->icon('heroicon-m-currency-dollar')
                     ->color('warning')
                     ->sortable(),

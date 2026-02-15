@@ -461,10 +461,6 @@
 
 /* Smooth scrolling for mobile */
 @media (max-width: 768px) {
-    html {
-        -webkit-overflow-scrolling: touch;
-    }
-
     body {
         font-size: 1rem; /* Ensure readable text on mobile */
     }
