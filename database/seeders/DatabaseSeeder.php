@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        // Seed game data
+        $this->call([
+            GameSeeder::class,
+        ]);
         // Seed quests
         $this->call(QuestSeeder::class);
     }

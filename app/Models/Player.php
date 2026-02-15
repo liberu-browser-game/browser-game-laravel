@@ -28,6 +28,10 @@ class Player extends Model
         'email_verified_at' => 'datetime',
     ];
 
+    // Relationships
+    public function profile()
+    {
+        return $this->hasOne(Player_Profile::class);
     /**
      * Get the player's inventory items.
      */
@@ -68,6 +72,11 @@ class Player extends Model
         return $this->hasMany(Resource::class);
     }
 
+    public function quests()
+    {
+        return $this->belongsToMany(Quest::class, 'player__quests')
+            ->withPivot('status')
+            ->withTimestamps();
     public function profile()
     {
         return $this->hasOne(Player_Profile::class);

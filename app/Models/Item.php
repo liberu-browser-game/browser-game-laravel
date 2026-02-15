@@ -16,6 +16,7 @@ class Item extends Model
         'rarity',
     ];
 
+    // Relationships
     /**
      * Get all player items that have this item.
      */
