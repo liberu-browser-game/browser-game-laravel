@@ -33,4 +33,9 @@ class Item extends Model
             ->withPivot('quantity')
             ->withTimestamps();
     }
+
+    public function questRewards()
+    {
+        return $this->hasMany(Quest::class, 'item_reward_id');
+    }
 }
