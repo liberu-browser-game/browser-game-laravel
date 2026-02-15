@@ -37,7 +37,7 @@ Quick highlights:
 - Secure authentication (Jetstream)
 - Profiles with avatars and metadata
 - Real-time notifications and private messaging
-- Admin management via Filament
+- **Enhanced admin panel** with comprehensive game management
 - Modular codebase for feature packages
 - **Mobile-responsive design** - Optimized for phones, tablets, and desktops
 - Touch-friendly game interface with 44px minimum touch targets
@@ -59,6 +59,19 @@ The game interface is fully optimized for mobile devices:
 - **Performance**: Optimized CSS (~10KB gzipped) for fast loading on mobile networks
 
 See [Mobile Responsiveness Guide](./docs/MOBILE_RESPONSIVENESS.md) for detailed documentation.
+
+### Admin Panel Features
+- **Intuitive Dashboard**: Real-time statistics, charts, and quick actions
+- **Global Search**: Fast navigation with keyboard shortcuts (Cmd+K / Ctrl+K)
+- **Player Management**: Comprehensive player data with inventory, quests, and resources
+- **Content Management**: Streamlined item and quest creation with duplicate actions
+- **Bulk Operations**: Efficient batch updates for game content
+- **Game Settings**: Centralized configuration for game mechanics and features
+
+For detailed admin panel documentation, see:
+- [Admin Panel User Guide](docs/ADMIN_PANEL_GUIDE.md)
+- [Admin Panel Changelog](docs/CHANGELOG_ADMIN_PANEL.md)
+- [Implementation Summary](docs/IMPLEMENTATION_SUMMARY.md)
 
 ---
 

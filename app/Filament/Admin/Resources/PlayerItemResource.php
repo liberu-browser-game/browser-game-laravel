@@ -65,6 +65,7 @@ class PlayerItemResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['player', 'item']))
             ->columns([
                 TextColumn::make('player.username')
                     ->searchable()
