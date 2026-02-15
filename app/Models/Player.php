@@ -28,6 +28,17 @@ class Player extends Model
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * Get the player's inventory items.
+     */
+    public function playerItems()
+    {
+        return $this->hasMany(Player_Item::class);
+    }
+
+    /**
+     * Get the items in the player's inventory.
+     */
     public function quests()
     {
         return $this->belongsToMany(Quest::class, 'player__quests')
