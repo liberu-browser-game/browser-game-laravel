@@ -33,4 +33,4 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 Route::get('/team-invitations/{invitation}', [TeamInvitationController::class, 'accept'])
     ->middleware(['signed', 'verified', 'auth', AuthenticateSession::class])
     ->name('team-invitations.accept');
-require __DIR__.'/socialstream.php';require __DIR__.'/socialstream.php';require __DIR__.'/socialstream.php';
+require __DIR__.'/socialstream.php';

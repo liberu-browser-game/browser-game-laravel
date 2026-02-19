@@ -14,6 +14,16 @@ class Item extends Model
         'description',
         'type',
         'rarity',
+        'slot',
+        'strength_bonus',
+        'defense_bonus',
+        'agility_bonus',
+        'intelligence_bonus',
+        'health_bonus',
+        'mana_bonus',
+        'min_level',
+        'sell_price',
+        'buy_price',
     ];
 
     // Relationships
