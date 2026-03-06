@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Player extends Model
+class Player extends Authenticatable
 {
     use HasFactory;
+    use HasApiTokens;
     use Notifiable;
 
     protected $fillable = [
@@ -112,7 +114,7 @@ class Player extends Model
     public function quests()
     {
         return $this->belongsToMany(Quest::class, 'player__quests')
-            ->withPivot('status', 'progress', 'started_at', 'completed_at')
+            ->withPivot('status', 'progress_percentage', 'completed_at')
             ->withTimestamps();
     }
 

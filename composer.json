@@ -20,13 +20,10 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^4.0",
-        "spatie/laravel-menu": "^4.2",
-        "spiral/roadrunner-cli": "^2.6.0",
-        "spiral/roadrunner-http": "^3.3.0"
+        "spatie/laravel-menu": "^4.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "filament/upgrade": "^5.0",
         "laravel/pint": "^1.14",
         "laravel/sail": "^1.28",
         "mockery/mockery": "^1.6",

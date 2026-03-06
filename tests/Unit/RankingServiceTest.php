@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Unit;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Player;
 use App\Services\RankingService;
@@ -19,7 +20,7 @@ class RankingServiceTest extends TestCase
         $this->rankingService = new RankingService();
     }
 
-    /** @test */
+    #[Test]
     public function it_calculates_player_score_correctly()
     {
         $player = Player::factory()->create([
@@ -31,7 +32,7 @@ class RankingServiceTest extends TestCase
         $this->assertEquals($expectedScore, $player->calculateScore());
     }
 
-    /** @test */
+    #[Test]
     public function it_recalculates_scores_for_all_players()
     {
         // Create players with different levels and experience
@@ -50,7 +51,7 @@ class RankingServiceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_rankings_correctly()
     {
         // Create players with pre-calculated scores
@@ -70,7 +71,7 @@ class RankingServiceTest extends TestCase
         $this->assertNotNull($player1->last_rank_update);
     }
 
-    /** @test */
+    #[Test]
     public function it_ranks_players_by_score_then_level_then_experience()
     {
         // Players with same score but different levels
@@ -87,7 +88,7 @@ class RankingServiceTest extends TestCase
         $this->assertEquals(2, $player1->rank);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_top_players()
     {
         // Create 15 players
@@ -107,7 +108,7 @@ class RankingServiceTest extends TestCase
         $this->assertEquals(10, $topPlayers->last()->rank);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_player_ranking()
     {
         $player = Player::factory()->create(['level' => 1, 'experience' => 0, 'score' => 0]);
@@ -125,7 +126,7 @@ class RankingServiceTest extends TestCase
         $this->assertNotNull($player->rank);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_player_rank()
     {
         $player = Player::factory()->create(['rank' => 5]);
@@ -135,7 +136,7 @@ class RankingServiceTest extends TestCase
         $this->assertEquals(5, $rank);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_players_with_no_rank()
     {
         $player = Player::factory()->create(['rank' => null]);

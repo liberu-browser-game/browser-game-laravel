@@ -20,6 +20,10 @@ class GameNotification extends Model
         'read_at',
     ];
 
+    protected $attributes = [
+        'is_read' => false,
+    ];
+
     protected $casts = [
         'data' => 'array',
         'is_read' => 'boolean',
