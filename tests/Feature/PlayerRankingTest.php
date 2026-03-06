@@ -107,6 +107,8 @@ class PlayerRankingTest extends TestCase
             'experience' => 100,
         ]);
 
+        $player->refresh();
+
         $this->assertArrayHasKey('rank', $player->getAttributes());
         $this->assertArrayHasKey('score', $player->getAttributes());
         $this->assertArrayHasKey('last_rank_update', $player->getAttributes());

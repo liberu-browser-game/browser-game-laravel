@@ -10,9 +10,6 @@ class SendQuestCompletedNotification
 {
     public function handle(QuestCompleted $event): void
     {
-        // Send email notification
-        $event->player->notify(new QuestCompletedNotification($event->quest, $event->reward));
-
         // Create in-game notification
         GameNotification::create([
             'player_id' => $event->player->id,
@@ -22,7 +19,7 @@ class SendQuestCompletedNotification
             'data' => [
                 'quest_id' => $event->quest->id,
                 'quest_name' => $event->quest->name,
-                'reward' => $event->reward,
+                'experience_gained' => $event->experienceGained,
             ],
         ]);
     }
