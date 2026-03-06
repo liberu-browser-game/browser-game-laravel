@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Modules\ModuleManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,14 +19,14 @@ class ModuleSystemTest extends TestCase
         $this->moduleManager = app(ModuleManager::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_list_all_modules()
     {
         $modules = $this->moduleManager->all();
         $this->assertNotEmpty($modules);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_module_by_name()
     {
         $module = $this->moduleManager->get('BlogModule');
@@ -33,7 +34,7 @@ class ModuleSystemTest extends TestCase
         $this->assertEquals('BlogModule', $module->getName());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_enable_and_disable_modules()
     {
         $moduleName = 'BlogModule';
@@ -53,7 +54,7 @@ class ModuleSystemTest extends TestCase
         $this->assertFalse($module->isEnabled());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_module_info()
     {
         $info = $this->moduleManager->getModuleInfo('BlogModule');
@@ -64,7 +65,7 @@ class ModuleSystemTest extends TestCase
         $this->assertEquals('BlogModule', $info['name']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_install_and_uninstall_modules()
     {
         $moduleName = 'BlogModule';
@@ -84,7 +85,7 @@ class ModuleSystemTest extends TestCase
         $this->assertFalse($module->isEnabled());
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_false_for_non_existent_modules()
     {
         $result = $this->moduleManager->enable('NonExistentModule');

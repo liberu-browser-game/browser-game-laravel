@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\DailyReward;
 use App\Models\Player;
@@ -29,7 +30,7 @@ class DailyRewardSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_check_daily_reward_status(): void
     {
         $response = $this->getJson("/api/players/{$this->player->id}/daily-reward/status");
@@ -51,7 +52,7 @@ class DailyRewardSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_claim_daily_reward(): void
     {
         $response = $this->postJson("/api/players/{$this->player->id}/daily-reward/claim");
@@ -78,7 +79,7 @@ class DailyRewardSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_claim_reward_twice_on_same_day(): void
     {
         // Claim once
@@ -94,7 +95,7 @@ class DailyRewardSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function streak_increases_for_consecutive_days(): void
     {
         // Create a reward for yesterday
@@ -117,7 +118,7 @@ class DailyRewardSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function streak_resets_after_missing_a_day(): void
     {
         // Create a reward from 2 days ago (streak broken)
@@ -140,7 +141,7 @@ class DailyRewardSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function status_shows_cannot_claim_after_claiming(): void
     {
         // Claim reward

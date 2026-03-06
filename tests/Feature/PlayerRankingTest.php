@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Player;
 use App\Services\RankingService;
@@ -11,7 +12,7 @@ class PlayerRankingTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_calculates_score_when_player_is_created()
     {
         $player = Player::factory()->create([
@@ -23,7 +24,7 @@ class PlayerRankingTest extends TestCase
         $this->assertEquals($expectedScore, $player->calculateScore());
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_player_score_when_level_changes()
     {
         $player = Player::factory()->create([
@@ -43,7 +44,7 @@ class PlayerRankingTest extends TestCase
         $this->assertEquals($expectedScore, $player->score);
     }
 
-    /** @test */
+    #[Test]
     public function it_maintains_ranking_order_after_updates()
     {
         // Create players with initial scores
@@ -79,7 +80,7 @@ class PlayerRankingTest extends TestCase
         $this->assertTrue($player1->rank < $player2->rank);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_multiple_players_with_same_score()
     {
         // Create players with identical scores but different levels
@@ -98,7 +99,7 @@ class PlayerRankingTest extends TestCase
         $this->assertNotEquals($player1->rank, $player2->rank);
     }
 
-    /** @test */
+    #[Test]
     public function player_model_has_ranking_attributes()
     {
         $player = Player::factory()->create([
@@ -111,7 +112,7 @@ class PlayerRankingTest extends TestCase
         $this->assertArrayHasKey('last_rank_update', $player->getAttributes());
     }
 
-    /** @test */
+    #[Test]
     public function ranking_service_can_get_top_players()
     {
         // Create multiple players

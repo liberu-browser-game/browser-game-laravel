@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Battle;
 use App\Models\Item;
@@ -45,7 +46,7 @@ class CombatSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_initiate_pve_battle(): void
     {
         $response = $this->postJson('/api/combat/pve', [
@@ -84,7 +85,7 @@ class CombatSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function pve_battle_requires_valid_player(): void
     {
         $response = $this->postJson('/api/combat/pve', [
@@ -96,7 +97,7 @@ class CombatSystemTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_initiate_pvp_battle(): void
     {
         $response = $this->postJson('/api/combat/pvp', [
@@ -124,7 +125,7 @@ class CombatSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function pvp_battle_requires_different_players(): void
     {
         $response = $this->postJson('/api/combat/pvp', [
@@ -135,7 +136,7 @@ class CombatSystemTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_be_healed(): void
     {
         $this->attacker->update(['health' => 10]);
@@ -154,7 +155,7 @@ class CombatSystemTest extends TestCase
         $this->assertEquals($this->attacker->max_health, $this->attacker->health);
     }
 
-    /** @test */
+    #[Test]
     public function pve_battle_awards_experience_on_win(): void
     {
         // Create gold resource for potential rewards

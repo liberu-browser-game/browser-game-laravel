@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Player;
 use App\Models\Quest;
@@ -34,9 +35,11 @@ class QuestSystemTest extends TestCase
         ]);
 
         // Create test item for rewards
-        $item = Item::create([
+        $item = Item::factory()->create([
             'name' => 'Test Sword',
             'description' => 'A test weapon',
+            'type' => 'weapon',
+            'rarity' => 'common',
         ]);
 
         // Create test quest
@@ -48,7 +51,7 @@ class QuestSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_accept_a_quest()
     {
         $playerQuest = $this->questService->acceptQuest($this->player, $this->quest);
@@ -59,7 +62,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('in-progress', $playerQuest->status);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_accept_same_quest_twice()
     {
         $this->questService->acceptQuest($this->player, $this->quest);
@@ -70,7 +73,7 @@ class QuestSystemTest extends TestCase
         $this->questService->acceptQuest($this->player, $this->quest);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_accept_completed_quest()
     {
         $playerQuest = Player_Quest::create([
@@ -85,7 +88,7 @@ class QuestSystemTest extends TestCase
         $this->questService->acceptQuest($this->player, $this->quest);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_complete_quest_and_receive_experience()
     {
         // Accept quest first
@@ -108,7 +111,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('completed', $playerQuest->status);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_complete_quest_and_receive_item_reward()
     {
         // Accept quest first
@@ -122,7 +125,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('Test Sword', $rewards['item']->name);
     }
 
-    /** @test */
+    #[Test]
     public function player_levels_up_when_earning_enough_experience()
     {
         // Create quest with enough XP to level up
@@ -147,7 +150,7 @@ class QuestSystemTest extends TestCase
         $this->assertTrue($rewards['level_up']);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_complete_quest_not_in_progress()
     {
         $this->expectException(Exception::class);
@@ -156,7 +159,7 @@ class QuestSystemTest extends TestCase
         $this->questService->completeQuest($this->player, $this->quest);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_available_quests()
     {
         // Create additional quests
@@ -178,7 +181,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('Another Quest', $availableQuests->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_active_quests()
     {
         // Accept quest
@@ -191,7 +194,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('Test Quest', $activeQuests->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_completed_quests()
     {
         // Accept and complete quest
@@ -205,7 +208,7 @@ class QuestSystemTest extends TestCase
         $this->assertEquals('Test Quest', $completedQuests->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_abandon_quest()
     {
         // Accept quest
@@ -223,7 +226,7 @@ class QuestSystemTest extends TestCase
         $this->assertNull($playerQuest);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_abandon_quest_not_in_progress()
     {
         $this->expectException(Exception::class);
@@ -232,7 +235,7 @@ class QuestSystemTest extends TestCase
         $this->questService->abandonQuest($this->player, $this->quest);
     }
 
-    /** @test */
+    #[Test]
     public function quest_api_returns_available_quests()
     {
         $response = $this->getJson('/api/quests/available?player_id=' . $this->player->id);
@@ -249,7 +252,7 @@ class QuestSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function quest_api_can_accept_quest()
     {
         $response = $this->postJson('/api/quests/' . $this->quest->id . '/accept', [
@@ -263,7 +266,7 @@ class QuestSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function quest_api_can_complete_quest()
     {
         // Accept quest first
@@ -288,7 +291,7 @@ class QuestSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function quest_api_can_abandon_quest()
     {
         // Accept quest first
@@ -305,7 +308,7 @@ class QuestSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function quest_relationships_work_correctly()
     {
         // Test Player -> Quest relationship

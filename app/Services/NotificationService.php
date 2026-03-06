@@ -16,9 +16,9 @@ class NotificationService
     /**
      * Notify player about quest completion
      */
-    public function notifyQuestCompleted(Player $player, Quest $quest, $reward = null): void
+    public function notifyQuestCompleted(Player $player, Quest $quest, int $experienceGained = 0): void
     {
-        event(new QuestCompleted($player, $quest, $reward));
+        event(new QuestCompleted($player, $quest, $experienceGained));
     }
 
     /**

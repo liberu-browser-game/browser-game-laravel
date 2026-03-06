@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Item;
 use App\Models\Player;
@@ -53,7 +54,7 @@ class CraftingSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_craft_an_item(): void
     {
         $response = $this->postJson("/api/crafting/recipes/{$this->recipe->id}/craft", [
@@ -81,7 +82,7 @@ class CraftingSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_craft_unknown_recipe(): void
     {
         $otherPlayer = Player::factory()->create(['level' => 5]);
@@ -97,7 +98,7 @@ class CraftingSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_craft_without_enough_materials(): void
     {
         // Remove materials
@@ -116,7 +117,7 @@ class CraftingSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_can_learn_a_recipe(): void
     {
         $newRecipe = Recipe::create([
@@ -144,7 +145,7 @@ class CraftingSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function player_cannot_learn_same_recipe_twice(): void
     {
         $response = $this->postJson("/api/crafting/recipes/{$this->recipe->id}/learn", [
@@ -158,7 +159,7 @@ class CraftingSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_player_recipes(): void
     {
         $response = $this->getJson("/api/players/{$this->player->id}/recipes");

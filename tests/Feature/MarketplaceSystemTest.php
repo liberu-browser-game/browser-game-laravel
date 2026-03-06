@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature;
+use PHPUnit\Framework\Attributes\Test;
 
 use App\Models\Item;
 use App\Models\MarketplaceListing;
@@ -40,7 +41,7 @@ class MarketplaceSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function can_get_marketplace_listings(): void
     {
         MarketplaceListing::create([
@@ -60,7 +61,7 @@ class MarketplaceSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function seller_can_create_a_listing(): void
     {
         $response = $this->postJson('/api/marketplace', [
@@ -91,7 +92,7 @@ class MarketplaceSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function seller_cannot_list_more_than_they_own(): void
     {
         $response = $this->postJson('/api/marketplace', [
@@ -108,7 +109,7 @@ class MarketplaceSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function buyer_can_purchase_a_listing(): void
     {
         $listing = MarketplaceListing::create([
@@ -142,7 +143,7 @@ class MarketplaceSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function buyer_cannot_purchase_own_listing(): void
     {
         $listing = MarketplaceListing::create([
@@ -164,7 +165,7 @@ class MarketplaceSystemTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function seller_can_cancel_a_listing(): void
     {
         $listing = MarketplaceListing::create([
@@ -196,7 +197,7 @@ class MarketplaceSystemTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function buyer_without_gold_cannot_purchase(): void
     {
         // Remove buyer's gold

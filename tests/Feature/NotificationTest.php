@@ -32,7 +32,7 @@ class NotificationTest extends TestCase
         $player = Player::factory()->create();
         $quest = Quest::factory()->create(['name' => 'Epic Quest']);
 
-        event(new QuestCompleted($player, $quest, 'Gold Sword'));
+        event(new QuestCompleted($player, $quest, 100));
 
         Event::assertDispatched(QuestCompleted::class, function ($event) use ($player, $quest) {
             return $event->player->id === $player->id &&
@@ -74,7 +74,7 @@ class NotificationTest extends TestCase
         $player = Player::factory()->create();
         $quest = Quest::factory()->create(['name' => 'Dragon Slayer']);
 
-        $service->notifyQuestCompleted($player, $quest, 'Dragon Armor');
+        $service->notifyQuestCompleted($player, $quest, 100);
 
         Event::assertDispatched(QuestCompleted::class);
     }
