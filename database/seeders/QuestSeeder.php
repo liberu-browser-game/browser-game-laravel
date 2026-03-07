@@ -16,17 +16,17 @@ class QuestSeeder extends Seeder
         // Create some items for quest rewards
         $sword = Item::firstOrCreate(
             ['name' => 'Iron Sword'],
-            ['description' => 'A sturdy iron sword for combat']
+            ['description' => 'A sturdy iron sword for combat', 'type' => 'weapon', 'rarity' => 'common']
         );
 
         $shield = Item::firstOrCreate(
             ['name' => 'Wooden Shield'],
-            ['description' => 'A basic wooden shield for defense']
+            ['description' => 'A basic wooden shield for defense', 'type' => 'armor', 'rarity' => 'common']
         );
 
         $potion = Item::firstOrCreate(
             ['name' => 'Health Potion'],
-            ['description' => 'Restores health when consumed']
+            ['description' => 'Restores health when consumed', 'type' => 'consumable', 'rarity' => 'common']
         );
 
         // Create sample quests
