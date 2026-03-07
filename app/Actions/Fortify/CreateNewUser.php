@@ -51,7 +51,7 @@ class CreateNewUser implements CreatesNewUsers
                 ]), function (User $user) use ($input) {
                     $team = $this->assignOrCreateTeam($user);
                     $user->switchTeam($team);
-                    if (!empty($input['role'])) {
+                    if (isset($input['role'])) {
                         setPermissionsTeamId($team->id);
                         $user->assignRole($input['role']);
                     }
@@ -135,7 +135,9 @@ class CreateNewUser implements CreatesNewUsers
                 'personal_team' => true,
             ]);
         } else {
-            $team->users()->attach($user);
+            if (! $team->users()->where('user_id', $user->id)->exists()) {
+                $team->users()->attach($user);
+            }
         }
 
         return $team;
