@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.git
+.github
+.gitignore
+node_modules
+npm-debug.log
+vendor
+tests
+.circleci
+storage/logs/*
+bootstrap/cache/*
+public/hot
+public/storage
+*.md
+Makefile
