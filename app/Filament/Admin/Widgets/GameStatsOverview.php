@@ -20,29 +20,6 @@ class GameStatsOverview extends BaseWidget
         $activeQuests = Player_Quest::where('status', 'in_progress')->count();
 
         return [
-            Stat::make('Total Players', Player::count())
-                ->description('Registered players')
-                ->descriptionIcon('heroicon-m-user-group')
-                ->color('success')
-                ->extraAttributes([
-                    'class' => 'game-stat-card',
-                ]),
-            Stat::make('Active Guilds', Guild::count())
-                ->description('Total guilds')
-                ->descriptionIcon('heroicon-m-shield-check')
-                ->color('info')
-                ->extraAttributes([
-                    'class' => 'game-stat-card',
-                ]),
-            Stat::make('Items Available', Item::count())
-                ->description('Total items in game')
-                ->descriptionIcon('heroicon-m-cube')
-                ->color('warning')
-                ->extraAttributes([
-                    'class' => 'game-stat-card',
-                ]),
-            Stat::make('Quests Available', Quest::count())
-                ->description('Total quests')
             Stat::make('Total Players', $totalPlayers)
                 ->description($recentPlayers . ' new this week')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
@@ -56,19 +33,23 @@ class GameStatsOverview extends BaseWidget
                 ->description('Total guilds')
                 ->descriptionIcon('heroicon-m-shield-check')
                 ->color('info'),
+            Stat::make('Items Available', Item::count())
+                ->description('Total items in game')
+                ->descriptionIcon('heroicon-m-cube')
+                ->color('primary'),
+            Stat::make('Quests Available', Quest::count())
+                ->description('Total quests')
+                ->descriptionIcon('heroicon-m-map')
+                ->color('warning'),
             Stat::make('Active Quests', $activeQuests)
                 ->description('Quests in progress')
-                ->descriptionIcon('heroicon-m-map')
-                ->color('primary')
-                ->extraAttributes([
-                    'class' => 'game-stat-card',
-                ]),
+                ->descriptionIcon('heroicon-m-flag')
+                ->color('danger'),
         ];
     }
-    
+
     protected function getColumns(): int
     {
-        // 2 columns on mobile, 4 on desktop
-        return 2;
+        return 3;
     }
 }

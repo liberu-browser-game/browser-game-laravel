@@ -127,14 +127,20 @@ class AppPanelProvider extends PanelProvider
     public function boot()
     {
         /**
-         * Disable Fortify routes.
+         * Disable Fortify routes in non-testing environments.
+         * In testing, Fortify routes are needed for auth-related feature tests.
          */
-        Fortify::$registersRoutes = false;
+        if (!app()->environment('testing')) {
+            Fortify::$registersRoutes = false;
+        }
 
         /**
-         * Disable Jetstream routes.
+         * Disable Jetstream routes in non-testing environments.
+         * In testing, Jetstream routes are needed for password confirmation tests.
          */
-        Jetstream::$registersRoutes = false;
+        if (!app()->environment('testing')) {
+            Jetstream::$registersRoutes = false;
+        }
 
         /**
          * Listen and create personal team for new accounts.

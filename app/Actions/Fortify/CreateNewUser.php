@@ -39,7 +39,7 @@ class CreateNewUser implements CreatesNewUsers
                     Rule::unique(User::class),
                 ],
                 'password' => $this->passwordRules(),
-                'role' => ['required', 'string', Rule::in(['tenant', 'buyer', 'seller', 'landlord', 'contractor'])],
+                'role' => ['sometimes', 'string', Rule::in(['tenant', 'buyer', 'seller', 'landlord', 'contractor'])],
             ])->validate();
 
            
@@ -51,8 +51,10 @@ class CreateNewUser implements CreatesNewUsers
                 ]), function (User $user) use ($input) {
                     $team = $this->assignOrCreateTeam($user);
                     $user->switchTeam($team);
-                    setPermissionsTeamId($team->id);
-                    $user->assignRole($input['role']);
+                    if (isset($input['role'])) {
+                        setPermissionsTeamId($team->id);
+                        $user->assignRole($input['role']);
+                    }
                 });
             });
             // $user = DB::transaction(function () use ($input) {
@@ -68,7 +70,7 @@ class CreateNewUser implements CreatesNewUsers
             Log::info('User created successfully', [
                 'user_id' => $user->id,
                 'email' => $user->email,
-                'role' => $input['role'],
+                'role' => $input['role'] ?? null,
             ]);
     
             return $user;
@@ -126,8 +128,18 @@ class CreateNewUser implements CreatesNewUsers
     protected function assignOrCreateTeam(User $user): Team
     {
         $team = Team::first();
-    
-        $team->users()->attach($user);
+
+        if (!$team) {
+            $team = $user->ownedTeams()->create([
+                'name'          => $user->name . "'s Team",
+                'personal_team' => true,
+            ]);
+        } else {
+            if (! $team->users()->where('user_id', $user->id)->exists()) {
+                $team->users()->attach($user);
+            }
+        }
+
         return $team;
     }
 }

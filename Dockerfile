@@ -120,8 +120,17 @@ USER ${USER}
 # Install Composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+<<<<<<< HEAD
 # Copy vendor from composer-deps stage for better caching
 COPY --chown=${USER}:${USER} --from=composer-deps /app/vendor ./vendor
+=======
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --no-autoloader \
+    --no-ansi \
+    --no-scripts
+>>>>>>> 7468302a64628fea1a6cbae7f4b15da38c4635f0
 
 # Copy composer files (needed for autoloader generation)
 COPY --chown=${USER}:${USER} composer.json composer.lock ./
