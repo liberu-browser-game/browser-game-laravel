@@ -2,11 +2,12 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Actions\BulkAction;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Actions\ViewAction;
@@ -181,7 +182,7 @@ class ItemResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    Tables\Actions\BulkAction::make('updateRarity')
+                    BulkAction::make('updateRarity')
                         ->label('Update Rarity')
                         ->icon('heroicon-o-star')
                         ->form([

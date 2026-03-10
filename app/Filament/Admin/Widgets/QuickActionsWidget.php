@@ -6,7 +6,7 @@ use Filament\Widgets\Widget;
 
 class QuickActionsWidget extends Widget
 {
-    protected static string $view = 'filament.admin.widgets.quick-actions-widget';
+    protected string $view = 'filament.admin.widgets.quick-actions-widget';
 
     protected static ?int $sort = 1;
 

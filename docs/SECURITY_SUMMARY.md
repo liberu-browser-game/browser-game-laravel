@@ -170,7 +170,7 @@ protected $fillable = [
 
 **Example:**
 ```php
-Tables\Actions\BulkAction::make('adjustLevel')
+Filament\Actions\BulkAction::make('adjustLevel')
     ->requiresConfirmation()  // Prevents accidental changes
     ->action(function (array $data, $records) {
         // Proper validation and bounds checking

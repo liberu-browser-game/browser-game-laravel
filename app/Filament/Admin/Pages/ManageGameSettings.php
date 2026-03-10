@@ -29,7 +29,6 @@ class ManageGameSettings extends SettingsPage
     public function form(Schema $schema): Schema
     {
         return $schema
-            ->columns(1)
             ->components([
                 Section::make('Player Settings')
                     ->description('Configure default player settings and progression')

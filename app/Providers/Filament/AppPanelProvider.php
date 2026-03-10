@@ -70,9 +70,9 @@ class AppPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/App/Widgets/Home'), for: 'App\\Filament\\App\\Widgets\\Home')
             ->widgets([
                 Widgets\AccountWidget::class,
-                PlayerStatsWidget::class,
-                ActiveQuestsWidget::class,
-                InventoryWidget::class,
+                // PlayerStatsWidget::class,
+                // ActiveQuestsWidget::class,
+                // InventoryWidget::class,
                 SocialLinksWidget::class,
                 // Widgets\FilamentInfoWidget::class,
             ])
@@ -90,9 +90,6 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 TeamsPermission::class,
-            ])
-            ->plugins([
-                // \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ]);
 
         // if (Features::hasApiFeatures()) {
