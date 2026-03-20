@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class ContentStatsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Content by Category';
+    protected ?string $heading = 'Content by Category';
 
     protected static ?int $sort = 3;
 

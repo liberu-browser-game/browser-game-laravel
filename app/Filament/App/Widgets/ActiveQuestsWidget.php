@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Filament\Actions\Action;
 
 class ActiveQuestsWidget extends BaseWidget
 {
@@ -23,10 +24,10 @@ class ActiveQuestsWidget extends BaseWidget
                 Quest::query()
                     ->whereHas('players', function (Builder $query) {
                         $user = Auth::user();
-                        $player = Player::where('user_id', $user->id)->first();
-                        if ($player) {
-                            $query->where('player_id', $player->id);
-                        }
+                        // $player = Player::where('user_id', $user->id)->first();
+                        // if ($player) {
+                        //     $query->where('player_id', $player->id);
+                        // }
                     })
                     ->limit(5)
             )
@@ -76,7 +77,7 @@ class ActiveQuestsWidget extends BaseWidget
                     }),
             ])
             ->actions([
-                Tables\Actions\Action::make('view')
+                Action::make('view')
                     ->icon('heroicon-m-eye')
                     ->url(fn (Quest $record): string => route('filament.app.resources.quests.view', $record))
                     ->openUrlInNewTab(),

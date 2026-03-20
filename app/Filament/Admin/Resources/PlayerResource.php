@@ -2,9 +2,10 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Actions\BulkAction;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -181,7 +182,7 @@ class PlayerResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    Tables\Actions\BulkAction::make('adjustLevel')
+                    BulkAction::make('adjustLevel')
                         ->label('Adjust Level')
                         ->icon('heroicon-o-arrow-trending-up')
                         ->form([

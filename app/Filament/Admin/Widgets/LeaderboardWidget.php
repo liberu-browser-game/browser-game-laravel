@@ -11,7 +11,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class LeaderboardWidget extends BaseWidget
 {
-    protected static ?string $heading = 'Top Players Leaderboard';
+    protected ?string $heading = 'Top Players Leaderboard';
 
     protected int | string | array $columnSpan = 'full';
 
