@@ -20,10 +20,10 @@ class HorizonServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Allow Horizon dashboard in local/testing environments by default.
-        // In production, gate access via a `viewHorizon` ability on the User model.
-        Horizon::auth(fn ($request) => app()->environment('local') || (
-            $request->user() && method_exists($request->user(), 'can') && $request->user()->can('viewHorizon')
-        ));
+        // Allow Horizon dashboard only for users with the 'super_admin' role.
+        // This uses spatie/laravel-permission's hasRole method.
+        Horizon::auth(fn ($request) =>
+            $request->user() && method_exists($request->user(), 'hasRole') && $request->user()->hasRole('super_admin')
+        );
     }
 }
