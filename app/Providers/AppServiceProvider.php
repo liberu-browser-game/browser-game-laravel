@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Permission;
+use App\Models\Role;
 use App\Modules\ModuleManager;
 use App\Modules\ModuleServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\PermissionRegistrar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,12 +16,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Register the module manager as a singleton
         $this->app->singleton(ModuleManager::class, function ($app) {
             return new ModuleManager();
         });
 
-        // Register the module service provider
         $this->app->register(ModuleServiceProvider::class);
     }
 
@@ -27,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Use custom Permission and Role models
+        $this->app->make(PermissionRegistrar::class)
+            ->setPermissionClass(Permission::class)
+            ->setRoleClass(Role::class);
     }
 }

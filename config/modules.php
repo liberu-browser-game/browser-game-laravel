@@ -73,6 +73,42 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | External Modules Path
+    |--------------------------------------------------------------------------
+    |
+    | Path for Composer-based external modules (PSR-4 auto-discovered).
+    | These are loaded from the app-modules/ directory at the project root.
+    |
+    */
+
+    'external_path' => base_path('app-modules'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Load Composer Modules
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, the module system will also discover modules installed
+    | via Composer in the app-modules/ directory.
+    |
+    */
+
+    'load_composer_modules' => env('MODULES_LOAD_COMPOSER', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Filament Auto-Discovery
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, Filament resources, pages, and widgets inside modules
+    | are auto-discovered and registered with the admin panel.
+    |
+    */
+
+    'filament_discovery' => env('MODULES_FILAMENT_DISCOVERY', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Enabled Modules
     |--------------------------------------------------------------------------
     |
@@ -139,6 +175,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Theme Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Default theme and persistence settings for per-user theming.
+    |
+    */
+
+    'theme' => [
+        'default' => env('THEME_DEFAULT', 'light'),
+        'persist' => env('THEME_PERSIST', 'session'), // 'session' or 'database'
+        'options' => ['light', 'dark', 'system'],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Module Requirements
     |--------------------------------------------------------------------------
     |
@@ -147,8 +198,8 @@ return [
     */
 
     'requirements' => [
-        'php' => '8.1',
-        'laravel' => '11.0',
+        'php' => '8.5',
+        'laravel' => '13.0',
     ],
 
 ];

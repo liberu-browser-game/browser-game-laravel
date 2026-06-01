@@ -5,13 +5,12 @@ namespace App\Modules;
 use Exception;
 use App\Modules\Contracts\ModuleInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 
 class ModuleManager
 {
     protected Collection $modules;
-    protected array $enabledModules = [];
 
     public function __construct()
     {
@@ -19,201 +18,108 @@ class ModuleManager
         $this->loadModules();
     }
 
-    /**
-     * Get all modules.
-     */
     public function all(): Collection
     {
         return $this->modules;
     }
 
-    /**
-     * Get enabled modules.
-     */
     public function enabled(): Collection
     {
-        return $this->modules->filter(fn($module) => $module->isEnabled());
+        return $this->modules->filter(fn ($module) => $module->isEnabled());
     }
 
-    /**
-     * Get disabled modules.
-     */
     public function disabled(): Collection
     {
-        return $this->modules->filter(fn($module) => !$module->isEnabled());
+        return $this->modules->filter(fn ($module) => ! $module->isEnabled());
     }
 
-    /**
-     * Get a specific module by name.
-     */
     public function get(string $name): ?ModuleInterface
     {
-        return $this->modules->first(fn($module) => $module->getName() === $name);
+        return $this->modules->first(fn ($module) => $module->getName() === $name);
     }
 
-    /**
-     * Check if a module exists.
-     */
     public function has(string $name): bool
     {
-        return $this->modules->contains(fn($module) => $module->getName() === $name);
+        return $this->modules->contains(fn ($module) => $module->getName() === $name);
     }
 
-    /**
-     * Enable a module.
-     */
     public function enable(string $name): bool
     {
         $module = $this->get($name);
-        
-        if (!$module) {
+        if (! $module) {
             return false;
         }
 
-        // Check dependencies
-        if (!$this->checkDependencies($module)) {
+        if (! $this->checkDependencies($module)) {
             throw new Exception("Module {$name} has unmet dependencies.");
         }
 
         $module->enable();
+        $this->flushCache();
+
         return true;
     }
 
-    /**
-     * Disable a module.
-     */
     public function disable(string $name): bool
     {
         $module = $this->get($name);
-        
-        if (!$module) {
+        if (! $module) {
             return false;
         }
 
-        // Check if other modules depend on this one
         if ($this->hasDependents($name)) {
             throw new Exception("Cannot disable module {$name} as other modules depend on it.");
         }
 
         $module->disable();
+        $this->flushCache();
+
         return true;
     }
 
-    /**
-     * Install a module.
-     */
     public function install(string $name): bool
     {
         $module = $this->get($name);
-        
-        if (!$module) {
+        if (! $module) {
             return false;
         }
 
-        // Check dependencies
-        if (!$this->checkDependencies($module)) {
+        if (! $this->checkDependencies($module)) {
             throw new Exception("Module {$name} has unmet dependencies.");
         }
 
         $module->install();
+        $this->flushCache();
+
         return true;
     }
 
-    /**
-     * Uninstall a module.
-     */
     public function uninstall(string $name): bool
     {
         $module = $this->get($name);
-        
-        if (!$module) {
+        if (! $module) {
             return false;
         }
 
-        // Check if other modules depend on this one
         if ($this->hasDependents($name)) {
             throw new Exception("Cannot uninstall module {$name} as other modules depend on it.");
         }
 
         $module->uninstall();
+        $this->flushCache();
+
         return true;
     }
 
-    /**
-     * Register a new module.
-     */
     public function register(ModuleInterface $module): void
     {
         $this->modules->put($module->getName(), $module);
     }
 
-    /**
-     * Load all modules from the modules directory.
-     */
-    protected function loadModules(): void
-    {
-        $modulesPath = app_path('Modules');
-        
-        if (!File::exists($modulesPath)) {
-            return;
-        }
-
-        $modules = File::directories($modulesPath);
-
-        foreach ($modules as $modulePath) {
-            $moduleName = basename($modulePath);
-            $this->loadModule($moduleName, $modulePath);
-        }
-    }
-
-    /**
-     * Load a specific module.
-     */
-    protected function loadModule(string $moduleName, string $modulePath): void
-    {
-        $moduleClass = "App\\Modules\\{$moduleName}\\{$moduleName}Module";
-        
-        if (class_exists($moduleClass)) {
-            $module = new $moduleClass();
-            if ($module instanceof ModuleInterface) {
-                $this->register($module);
-            }
-        }
-    }
-
-    /**
-     * Check if module dependencies are met.
-     */
-    protected function checkDependencies(ModuleInterface $module): bool
-    {
-        foreach ($module->getDependencies() as $dependency) {
-            $dependencyModule = $this->get($dependency);
-            if (!$dependencyModule || !$dependencyModule->isEnabled()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Check if any modules depend on the given module.
-     */
-    protected function hasDependents(string $moduleName): bool
-    {
-        return $this->enabled()->contains(function ($module) use ($moduleName) {
-            return in_array($moduleName, $module->getDependencies());
-        });
-    }
-
-    /**
-     * Get module information for display.
-     */
     public function getModuleInfo(string $name): array
     {
         $module = $this->get($name);
-        
-        if (!$module) {
+        if (! $module) {
             return [];
         }
 
@@ -227,13 +133,98 @@ class ModuleManager
         ];
     }
 
-    /**
-     * Get all modules information.
-     */
     public function getAllModulesInfo(): array
     {
-        return $this->modules->map(function ($module) {
-            return $this->getModuleInfo($module->getName());
-        })->toArray();
+        return $this->modules->map(fn ($module) => $this->getModuleInfo($module->getName()))->toArray();
+    }
+
+    public function flushCache(): void
+    {
+        Cache::forget(config('modules.cache_key', 'app.modules'));
+    }
+
+    protected function loadModules(): void
+    {
+        // In development mode skip caching so changes are picked up immediately
+        if (config('modules.development', false)) {
+            $this->discoverModules();
+
+            return;
+        }
+
+        if (config('modules.cache', true)) {
+            $cached = Cache::get(config('modules.cache_key', 'app.modules'));
+            if ($cached !== null) {
+                $this->modules = collect($cached);
+
+                return;
+            }
+        }
+
+        $this->discoverModules();
+
+        if (config('modules.cache', true)) {
+            Cache::put(
+                config('modules.cache_key', 'app.modules'),
+                $this->modules->toArray(),
+                config('modules.cache_ttl', 3600)
+            );
+        }
+    }
+
+    protected function discoverModules(): void
+    {
+        $this->loadFromPath(config('modules.path', app_path('Modules')));
+
+        if (config('modules.load_composer_modules', false)) {
+            $externalPath = config('modules.external_path', base_path('app-modules'));
+            if (File::exists($externalPath)) {
+                $this->loadFromPath($externalPath, isExternal: true);
+            }
+        }
+    }
+
+    protected function loadFromPath(string $modulesPath, bool $isExternal = false): void
+    {
+        if (! File::exists($modulesPath)) {
+            return;
+        }
+
+        foreach (File::directories($modulesPath) as $modulePath) {
+            $moduleName = basename($modulePath);
+            $this->loadModule($moduleName, $modulePath, $isExternal);
+        }
+    }
+
+    protected function loadModule(string $moduleName, string $modulePath, bool $isExternal = false): void
+    {
+        $namespace = $isExternal ? "Modules\\{$moduleName}" : config('modules.namespace', 'App\\Modules');
+        $moduleClass = "{$namespace}\\{$moduleName}\\{$moduleName}Module";
+
+        if (class_exists($moduleClass)) {
+            $module = new $moduleClass();
+            if ($module instanceof ModuleInterface) {
+                $this->register($module);
+            }
+        }
+    }
+
+    protected function checkDependencies(ModuleInterface $module): bool
+    {
+        foreach ($module->getDependencies() as $dependency) {
+            $dep = $this->get($dependency);
+            if (! $dep || ! $dep->isEnabled()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    protected function hasDependents(string $moduleName): bool
+    {
+        return $this->enabled()->contains(
+            fn ($module) => in_array($moduleName, $module->getDependencies())
+        );
     }
 }

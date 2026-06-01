@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browser-game
+  namespace: browser-game
+  labels:
+    app: browser-game
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: browser-game
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: browser-game
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z mysql 3306; do
+                echo "Waiting for MySQL..."; sleep 2;
+              done
+        - name: migrations
+          image: ghcr.io/liberu-browser-game/browser-game-laravel:latest
+          command:
+            - sh
+            - -c
+            - |
+              php artisan migrate --force &&
+              php artisan config:cache &&
+              php artisan route:cache &&
+              php artisan view:cache
+          envFrom:
+            - configMapRef:
+                name: browser-game-config
+            - secretRef:
+                name: browser-game-secrets
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+      containers:
+        - name: php-fpm
+          image: ghcr.io/liberu-browser-game/browser-game-laravel:latest
+          ports:
+            - containerPort: 9000
+          envFrom:
+            - configMapRef:
+                name: browser-game-config
+            - secretRef:
+                name: browser-game-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+            - name: cache
+              mountPath: /var/www/html/bootstrap/cache
+          startupProbe:
+            exec:
+              command: [php-fpm-healthcheck]
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            exec:
+              command: [php-fpm-healthcheck]
+            initialDelaySeconds: 0
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command: [php-fpm-healthcheck, --accepted-conn=1]
+            initialDelaySeconds: 0
+            periodSeconds: 5
+          securityContext:
+            runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+            - name: public-assets
+              mountPath: /var/www/html/public
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          securityContext:
+            runAsUser: 101
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              add: ["NET_BIND_SERVICE"]
+              drop: ["ALL"]
+
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: browser-game-storage
+        - name: cache
+          emptyDir: {}
+        - name: public-assets
+          emptyDir: {}
+        - name: nginx-config
+          configMap:
+            name: nginx-config
