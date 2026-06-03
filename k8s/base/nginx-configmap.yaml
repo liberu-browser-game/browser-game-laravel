@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-config
+  name: browser-game-nginx-config
   namespace: browser-game
 data:
   nginx.conf: |
@@ -13,8 +13,16 @@ data:
 
         add_header X-Frame-Options "SAMEORIGIN";
         add_header X-Content-Type-Options "nosniff";
+        add_header X-XSS-Protection "1; mode=block";
 
         charset utf-8;
+
+        # Kubernetes health probe endpoint (served by Nginx directly)
+        location = /health {
+            access_log off;
+            return 200 'ok';
+            add_header Content-Type text/plain;
+        }
 
         location / {
             try_files $uri $uri/ /index.php?$query_string;
@@ -30,6 +38,7 @@ data:
             fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
             include fastcgi_params;
             fastcgi_hide_header X-Powered-By;
+            fastcgi_read_timeout 300;
         }
 
         location ~ /\.(?!well-known).* {

@@ -17,6 +17,20 @@ use Laravel\Jetstream\Http\Controllers\TeamInvitationController;
 
 Route::get('/', fn () => view('welcome'));
 
+// Kubernetes health check endpoints
+Route::prefix('health')->group(function () {
+    Route::get('/startup', fn () => response()->json(['status' => 'ok']));
+    Route::get('/live',    fn () => response()->json(['status' => 'ok']));
+    Route::get('/ready',   function () {
+        try {
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
+        } catch (\Throwable) {
+            return response()->json(['status' => 'unavailable', 'reason' => 'database'], 503);
+        }
+        return response()->json(['status' => 'ok']);
+    });
+});
+
 // Route::redirect('/login', '/app/login')->name('login');
 
 // Route::redirect('/register', '/app/register')->name('register');

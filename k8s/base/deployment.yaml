@@ -5,20 +5,23 @@ metadata:
   namespace: browser-game
   labels:
     app: browser-game
+    component: application
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: browser-game
+  replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: browser-game
+      component: application
   template:
     metadata:
       labels:
         app: browser-game
+        component: application
     spec:
       initContainers:
         - name: wait-for-mysql
@@ -30,15 +33,16 @@ spec:
               until nc -z mysql 3306; do
                 echo "Waiting for MySQL..."; sleep 2;
               done
+              echo "MySQL is ready!"
         - name: migrations
           image: ghcr.io/liberu-browser-game/browser-game-laravel:latest
           command:
             - sh
             - -c
             - |
-              php artisan migrate --force &&
-              php artisan config:cache &&
-              php artisan route:cache &&
+              php artisan migrate --force
+              php artisan config:cache
+              php artisan route:cache
               php artisan view:cache
           envFrom:
             - configMapRef:
@@ -53,11 +57,17 @@ spec:
           image: ghcr.io/liberu-browser-game/browser-game-laravel:latest
           ports:
             - containerPort: 9000
+              name: php-fpm
           envFrom:
             - configMapRef:
                 name: browser-game-config
             - secretRef:
                 name: browser-game-secrets
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+            - name: cache
+              mountPath: /var/www/html/bootstrap/cache
           resources:
             requests:
               memory: "256Mi"
@@ -65,36 +75,63 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1000m"
-          volumeMounts:
-            - name: storage
-              mountPath: /var/www/html/storage
-            - name: cache
-              mountPath: /var/www/html/bootstrap/cache
           startupProbe:
-            exec:
-              command: [php-fpm-healthcheck]
+            httpGet:
+              path: /health/startup
+              port: 80
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
             initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 30
           livenessProbe:
-            exec:
-              command: [php-fpm-healthcheck]
-            initialDelaySeconds: 0
+            httpGet:
+              path: /health/live
+              port: 80
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
+            initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
-            exec:
-              command: [php-fpm-healthcheck, --accepted-conn=1]
-            initialDelaySeconds: 0
+            httpGet:
+              path: /health/ready
+              port: 80
+              httpHeaders:
+                - name: X-Forwarded-Proto
+                  value: https
+            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+            successThreshold: 1
           securityContext:
-            runAsUser: 1000
             runAsNonRoot: true
+            runAsUser: 1000
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
 
         - name: nginx
           image: nginx:1.27-alpine
           ports:
             - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: nginx.conf
+            - name: storage
+              mountPath: /var/www/html/storage
+              readOnly: true
+            - name: public-assets
+              mountPath: /var/www/html/public
+              readOnly: true
           resources:
             requests:
               memory: "64Mi"
@@ -102,31 +139,27 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
-          volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d/default.conf
-              subPath: nginx.conf
-            - name: public-assets
-              mountPath: /var/www/html/public
           livenessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 80
-            initialDelaySeconds: 5
+            initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /healthz
+              path: /health
               port: 80
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
             periodSeconds: 5
           securityContext:
-            runAsUser: 101
             runAsNonRoot: true
+            runAsUser: 101
             allowPrivilegeEscalation: false
             capabilities:
-              add: ["NET_BIND_SERVICE"]
-              drop: ["ALL"]
+              drop:
+                - ALL
+              add:
+                - NET_BIND_SERVICE
 
       volumes:
         - name: storage
@@ -138,4 +171,6 @@ spec:
           emptyDir: {}
         - name: nginx-config
           configMap:
-            name: nginx-config
+            name: browser-game-nginx-config
+      securityContext:
+        fsGroup: 1000

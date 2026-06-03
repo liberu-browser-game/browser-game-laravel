@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: queue-worker
+  namespace: browser-game
+  labels:
+    app: browser-game
+    component: queue-worker
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: browser-game
+      component: queue-worker
+  template:
+    metadata:
+      labels:
+        app: browser-game
+        component: queue-worker
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: queue-worker
+          image: ghcr.io/liberu-browser-game/browser-game-laravel:latest
+          command:
+            - php
+            - artisan
+            - queue:work
+            - --sleep=3
+            - --tries=3
+            - --max-time=3600
+            - --memory=256
+          envFrom:
+            - configMapRef:
+                name: browser-game-config
+            - secretRef:
+                name: browser-game-secrets
+          volumeMounts:
+            - name: storage
+              mountPath: /var/www/html/storage
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: browser-game-storage
+      securityContext:
+        fsGroup: 1000

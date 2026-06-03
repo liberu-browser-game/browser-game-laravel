@@ -10,25 +10,25 @@ resources:
 
 patches:
   - patch: |-
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: browser-game-config
-        namespace: browser-game-dev
-      data:
-        APP_ENV: "local"
-        APP_DEBUG: "true"
-        APP_URL: "http://browser-game.local"
-        LOG_LEVEL: "debug"
-        MODULES_CACHE: "false"
+      - op: replace
+        path: /spec/replicas
+        value: 1
+    target:
+      kind: Deployment
+      name: browser-game
+  - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 1
+    target:
+      kind: Deployment
+      name: queue-worker
   - patch: |-
       apiVersion: apps/v1
       kind: Deployment
       metadata:
         name: browser-game
-        namespace: browser-game-dev
       spec:
-        replicas: 1
         template:
           spec:
             containers:
@@ -40,24 +40,17 @@ patches:
                   limits:
                     memory: "512Mi"
                     cpu: "500m"
-  - patch: |-
-      apiVersion: networking.k8s.io/v1
-      kind: Ingress
-      metadata:
-        name: browser-game
-        namespace: browser-game-dev
-        annotations:
-          nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-      spec:
-        ingressClassName: nginx
-        rules:
-          - host: browser-game.local
-            http:
-              paths:
-                - path: /
-                  pathType: Prefix
-                  backend:
-                    service:
-                      name: dev-browser-game
-                      port:
-                        number: 80
+
+configMapGenerator:
+  - name: browser-game-config
+    behavior: merge
+    literals:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://browser-game.local
+      - LOG_LEVEL=debug
+      - MODULES_CACHE=false
+
+images:
+  - name: ghcr.io/liberu-browser-game/browser-game-laravel
+    newTag: develop

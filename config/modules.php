@@ -85,6 +85,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Additional External Paths
+    |--------------------------------------------------------------------------
+    |
+    | Additional paths to scan for external modules beyond the primary
+    | external_path. Useful when modules come from multiple locations.
+    |
+    */
+
+    'external_paths' => [],
+
+    /*
+    |--------------------------------------------------------------------------
     | Load Composer Modules
     |--------------------------------------------------------------------------
     |
@@ -171,7 +183,7 @@ return [
     |
     */
 
-    'development' => env('APP_DEBUG', false),
+    'development' => env('MODULES_DEVELOPMENT', env('APP_DEBUG', false)),
 
     /*
     |--------------------------------------------------------------------------

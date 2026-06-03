@@ -8,13 +8,18 @@ resources:
 
 patches:
   - patch: |-
+      - op: replace
+        path: /spec/replicas
+        value: 3
+    target:
+      kind: Deployment
+      name: browser-game
+  - patch: |-
       apiVersion: apps/v1
       kind: Deployment
       metadata:
         name: browser-game
-        namespace: browser-game
       spec:
-        replicas: 3
         template:
           spec:
             containers:
@@ -26,14 +31,16 @@ patches:
                   limits:
                     memory: "2Gi"
                     cpu: "2000m"
-  - patch: |-
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: browser-game-config
-        namespace: browser-game
-      data:
-        APP_ENV: "production"
-        APP_DEBUG: "false"
-        LOG_LEVEL: "error"
-        MODULES_CACHE: "true"
+
+configMapGenerator:
+  - name: browser-game-config
+    behavior: merge
+    literals:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - LOG_LEVEL=error
+      - MODULES_CACHE=true
+
+images:
+  - name: ghcr.io/liberu-browser-game/browser-game-laravel
+    newTag: latest
