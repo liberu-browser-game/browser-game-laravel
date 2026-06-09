@@ -32,5 +32,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->make(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
             ->setRoleClass(Role::class);
+
     }
 }
